@@ -154,7 +154,11 @@ void			export_varible_in_env(t_list *env_list,
 	}
 	else // добавляем переменную и значение
 	{
+		char *new_line;
 
+		new_line = ft_strjoin(name_varible, "="); // MALLOC
+		new_line = ft_strjoin(new_line, value_varible); // MALLOC
+		ft_lstadd_back(&env_list, ft_lstnew(new_line));
 	}
 	// ДОБАВИТЬ В КОНЕЦ env l-value && r-value
 	// ft_lstadd_back(*env_list, ft_lstnew());
@@ -169,15 +173,85 @@ void			export_varible_in_env(t_list *env_list,
 	// }
 }
 
+void			unset(t_list *env_list, char *name_varible)
+{
+	t_list *copy;
+	t_list *before;
+	t_list *after;
+	int i;
+	int j;
+	int k;
+	char *str;
+	int len_str;
+
+	copy = env_list;
+	i = 0;
+	j = 0;
+	k = 0;
+	len_str = ft_strlen(name_varible);
+	while (copy->next != NULL)
+	{
+		copy = copy->next;
+		str = copy->content;
+		while (str[i] == name_varible[i] && str[i] != '\0' && name_varible[i] != '\0')
+			i++;
+		if (len_str == i && str[i] == '=')
+			break ;
+		i = 0;
+		j++;
+	}
+	after = copy->next;
+	before = env_list->next;
+	while (k != (j - 1))
+	{
+		before = before->next;
+		k++;
+	}
+	free(copy);
+	if (before->next != NULL)
+		before->next = after;
+	// if (str[i] != '=')
+	// 	return ;
+	// printf("\n\nSTR = %s\n\n", copy->content);
+}
+
+void			output_export_env(t_list *list)
+{
+	t_list *copy;
+	t_list *next;
+	t_list *current;
+	t_list *tmp;
+
+	copy = list->next;
+	while (copy->next != NULL)
+	{
+		if (ft_strncmp((char *)(copy->content), (char *)(copy->next->content),
+			ft_strlen((char *)(copy->content))) == 1)
+		{
+			next = copy->next;
+			tmp = copy->next->next;
+			copy->next = copy;
+			copy->next = tmp;
+		}
+		copy = copy->next;
+	}
+}
+
 // список env лежит в obj.env_list
 int				main(int argc, char **argv, char **envp)
 {
 	t_obj obj;
 	// ft_lstnew(&obj.env_list);
 	add_list_env(&obj.env_list, envp); // положить envp в связный список
-	output_list(&obj.env_list);
-	export_varible_in_env(&obj.env_list, "PWD", "21");
+	output_list(&obj.env_list); // вывести list_env
+	export_varible_in_env(&obj.env_list, "EGOR", "228");
 	printf("\n\n\n\nNEW_ENV!!!\n");
+	output_list(&obj.env_list);
+	printf("\n\n\n\nDELETE_ENV!!!\n");
+	unset(&obj.env_list, "TERM");
+	printf("\n\n\n\nDELETE_ENV!!!\n");
+	unset(&obj.env_list, "EGOR");
+	// printf("\n\n\n\nNEW_ENV!!!\n");
 	output_list(&obj.env_list);
 	/*
 	* вывод списка
