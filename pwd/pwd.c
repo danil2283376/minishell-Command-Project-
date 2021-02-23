@@ -41,6 +41,7 @@ char	*ft_pwd(t_obj *obj)
 	if (!(buf = malloc(size)))
 		return (NULL);
 	ptr = getcwd(buf, size);
+	free(ptr);
 	return (ptr);
 }
 

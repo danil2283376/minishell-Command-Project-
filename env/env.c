@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "libft/libft.h"
+#include <string.h>
 
 typedef struct	s_com_flags
 {
@@ -26,9 +27,10 @@ typedef struct	s_obj
 {
 	t_pars		pars;
 	t_list		env_list;
+	t_list		export_list;
 }				t_obj;
 
-void			add_list_env(t_list *env_list, char **envp)
+void			add_list_env(t_list *env_list, t_list *export_list, char **envp)
 {
 	int i;
 	int j;
@@ -40,6 +42,7 @@ void			add_list_env(t_list *env_list, char **envp)
 	while (envp[i])
 	{
 		ft_lstadd_back(&env_list, ft_lstnew(envp[i]));
+		ft_lstadd_back(&export_list, ft_lstnew(envp[i]));
 		i++;
 	}
 }
@@ -111,6 +114,7 @@ void			export_varible_in_env(t_list *env_list,
 	k = 0;
 	if (boolean) // меняем значение существуещей переменной
 	{
+		// printf("\n\n\n\n\n1\n\n\n\n\n");
 		while (copy->next != NULL)
 		{
 			copy = copy->next;
@@ -159,6 +163,7 @@ void			export_varible_in_env(t_list *env_list,
 		new_line = ft_strjoin(name_varible, "="); // MALLOC
 		new_line = ft_strjoin(new_line, value_varible); // MALLOC
 		ft_lstadd_back(&env_list, ft_lstnew(new_line));
+		// output_list(env_list);
 	}
 	// ДОБАВИТЬ В КОНЕЦ env l-value && r-value
 	// ft_lstadd_back(*env_list, ft_lstnew());
@@ -183,58 +188,108 @@ void			unset(t_list *env_list, char *name_varible)
 	int k;
 	char *str;
 	int len_str;
+	int boolean; // существует аргумент или нет
 
 	copy = env_list;
 	i = 0;
 	j = 0;
 	k = 0;
 	len_str = ft_strlen(name_varible);
-	while (copy->next != NULL)
+	boolean = exist_value_env(env_list, name_varible);
+	if (boolean)
 	{
-		copy = copy->next;
-		str = copy->content;
-		while (str[i] == name_varible[i] && str[i] != '\0' && name_varible[i] != '\0')
-			i++;
-		if (len_str == i && str[i] == '=')
-			break ;
-		i = 0;
-		j++;
+		while (copy->next != NULL)
+		{
+			copy = copy->next;
+			str = copy->content;
+			while (str[i] == name_varible[i] && str[i] != '\0' && name_varible[i] != '\0')
+				i++;
+			if (len_str == i && str[i] == '=')
+				break ;
+			i = 0;
+			j++;
+		}
+		after = copy->next;
+		before = env_list->next;
+		while (k != (j - 1))
+		{
+			before = before->next;
+			k++;
+		}
+		free(copy);
+		if (before->next != NULL)
+			before->next = after;
 	}
-	after = copy->next;
-	before = env_list->next;
-	while (k != (j - 1))
-	{
-		before = before->next;
-		k++;
-	}
-	free(copy);
-	if (before->next != NULL)
-		before->next = after;
-	// if (str[i] != '=')
-	// 	return ;
-	// printf("\n\nSTR = %s\n\n", copy->content);
 }
 
-void			output_export_env(t_list *list)
+int	ft_strcmp(char *s1, char *s2)
+{
+	int	i;
+
+	i = 0;
+	while (s1[i] && s2[i] && s1[i] == s2[i])
+		++i;
+	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
+}
+
+void			output_export_list(t_list *export)
+{
+	t_list *copy;
+	int i;
+	char *str;
+
+	copy = export->next;
+	i = 0;
+	while (copy != NULL)
+	{
+		str = (char *)(copy->content);
+		ft_putstr_fd("declare -x ", 1);
+		while (str[i] != '=' && str[i])
+			write(1, &str[i++], 1);
+		if (str[i] == '=')
+			write(1, &str[i++], 1);
+		write(1, "\"", 1);
+		while (str[i])
+			write(1, &str[i++], 1);
+		write(1, "\"", 1);
+		// write(1, (char *)(copy->content), ft_strlen((char *)(copy->content)));
+		write(1, "\n", 1);
+		copy = copy->next;
+		i = 0;
+	}
+}
+
+void			sorting_export_list(t_list *list)
 {
 	t_list *copy;
 	t_list *next;
-	t_list *current;
-	t_list *tmp;
+	char *str1;
+	char *str2;
+	char *tmp;
 
 	copy = list->next;
+	next = list->next->next;
 	while (copy->next != NULL)
 	{
-		if (ft_strncmp((char *)(copy->content), (char *)(copy->next->content),
-			ft_strlen((char *)(copy->content))) == 1)
+		while (next->next != NULL)
 		{
-			next = copy->next;
-			tmp = copy->next->next;
-			copy->next = copy;
-			copy->next = tmp;
+			str1 = (char *)(copy->content);
+			str2 = (char *)(next->content);
+			// if (ft_strncmp(str1, str2, ft_strlen(str1)) == 1)
+			if (ft_strcmp(str1, str2) > 0)
+			{
+				tmp = str1;
+				// str1 = str2;
+				// str2 = tmp;
+				copy->content = str2;
+				next->content = tmp;
+			}
+			next = next->next;
 		}
 		copy = copy->next;
+		next = copy;
 	}
+	output_export_list(list);
 }
 
 // список env лежит в obj.env_list
@@ -242,17 +297,30 @@ int				main(int argc, char **argv, char **envp)
 {
 	t_obj obj;
 	// ft_lstnew(&obj.env_list);
-	add_list_env(&obj.env_list, envp); // положить envp в связный список
+	add_list_env(&obj.env_list, &obj.export_list, envp); // положить envp в связный список
+	// output_list(&obj.env_list); // вывести list_env
+	// export_varible_in_env(&obj.env_list, "EGOR", "228");
+	// export_varible_in_env(&obj.export_list, "EGOR", "228");
+	// export_varible_in_env(&obj.export_list, "a", "123");
+	// sorting_export_list(&obj.export_list);
+	unset(&obj.env_list, "a");
+	unset(&obj.env_list, "ass");
 	output_list(&obj.env_list); // вывести list_env
-	export_varible_in_env(&obj.env_list, "EGOR", "228");
-	printf("\n\n\n\nNEW_ENV!!!\n");
-	output_list(&obj.env_list);
-	printf("\n\n\n\nDELETE_ENV!!!\n");
-	unset(&obj.env_list, "TERM");
-	printf("\n\n\n\nDELETE_ENV!!!\n");
-	unset(&obj.env_list, "EGOR");
+	// unset(&obj.export_list, "EGOR");
+	// sorting_export_list(&obj.export_list);
 	// printf("\n\n\n\nNEW_ENV!!!\n");
-	output_list(&obj.env_list);
+	// output_list(&obj.env_list);
+	// // printf("\n\n\n\nDELETE_ENV!!!\n");
+	// // unset(&obj.env_list, "TERM");
+	// // printf("\n\n\n\nDELETE_ENV!!!\n");
+	// unset(&obj.env_list, "EGOR");
+	// printf("\n\n\n\nNEW_ENV!!!\n");
+	// output_list(&obj.env_list);
+	// printf("\n\n\n\nSORT_ENV!!!\n");
+	// sorting_export_list(&obj.export_list);
+	// printf("\n\n\n\nNEW_ENV!!!\n");
+	// output_list(&obj.env_list);
+	// output_list(&obj.env_list);
 	/*
 	* вывод списка
 	*/
