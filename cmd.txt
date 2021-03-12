@@ -1,0 +1,38 @@
+echo '>\'
+echo test "" test "" test
+echo "$=TEST"
+echo "$"
+echo "$1TEST"
+echo "$=TEST"
+echo '\\\ \\\ \\\ \\\ $\\\\\\\'
+echo $\$
+echo "$<<<$>>>$"
+/bin/echo " \' "
+echo "\a"
+cat < doesntexist; echo $?  #BACK_REDIRECT
+exit -9223372036854775810
+/bin/ls filethatdoesntexist
+echo $?
+echo 123 | echo 234 |      #PIPE
+echo 123 > file1 | cat -e  #PIPE
+cat < file1 > file2        #BACK_REDIRECT
+echo asd;echo asd
+echo $\\
+echo $?
+echo $
+echo $?%asd ?
+echo >  ?
+echo > |
+echo > ;
+echo > 
+echo > ;
+cat /dev/random | head -c 100 | wc -c              #PIPE
+echo \“test
+echo \>
+echo testing multi ; echo "test 1 ; | and 2"   #PIPE
+export TEST=“ls -l - a”            #NE_RABOTAET
+echo ” $TEST lol $TEST”
+export 1TEST= ;
+e
+export TEST="ls -l - a" ; echo $TEST ; $LS ; env | sort | grep -v SHLVL | grep -v _=    #PIPE
+echo > test'sticked' bonjour

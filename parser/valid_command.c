@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/16 18:36:50 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/02 12:01:43 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/09 19:18:43 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,15 +69,22 @@ int		fn_valid_command(t_obj *obj)
 	obj->pars.command[2] == 'i' && obj->pars.command[3] == 't' &&
 	obj->pars.command[4] == '\0' && (obj->flag.c_flag.exi = 1) != -1)
 		return (1);
-	if (obj->pars.command[0] == 'e' && obj->pars.command[1] == 'c' &&
+	if (((obj->pars.command[0] == 'e' && obj->pars.command[1] == 'c' &&
 	obj->pars.command[2] == 'h' && obj->pars.command[3] == 'o' &&
-	obj->pars.command[4] == '\0' && (obj->flag.c_flag.ec = 1) != -1)
+	obj->pars.command[4] == '\0') || (obj->pars.command[0] == '/' && obj->pars.command[1] == 'b' &&
+	obj->pars.command[2] == 'i' && obj->pars.command[3] == 'n' &&
+	obj->pars.command[4] == '/' && obj->pars.command[5] == 'e' && obj->pars.command[6] == 'c' &&
+	obj->pars.command[7] == 'h' && obj->pars.command[8] == 'o' &&
+	obj->pars.command[9] == '\0')) && (obj->flag.c_flag.ec = 1) != -1)
 		return (1);
 	if (obj->pars.command[0] == 'c' && obj->pars.command[1] == 'd' &&
 	obj->pars.command[2] == '\0' && (obj->flag.c_flag.cd = 1) != -1)
 		return (1);
-	if (obj->pars.command[0] == 'p' && obj->pars.command[1] == 'w' &&
-	obj->pars.command[2] == 'd' && obj->pars.command[3] == '\0' &&
+	if (((obj->pars.command[0] == 'p' && obj->pars.command[1] == 'w' &&
+	obj->pars.command[2] == 'd' && obj->pars.command[3] == '\0') || (obj->pars.command[0] == '/' && obj->pars.command[1] == 'b' &&
+	obj->pars.command[2] == 'i' && obj->pars.command[3] == 'n' &&
+	obj->pars.command[4] == '/' && obj->pars.command[5] == 'p' && obj->pars.command[6] == 'w' &&
+	obj->pars.command[7] == 'd' && obj->pars.command[8] == '\0')) &&
 	(obj->flag.c_flag.pw = 1) != -1)
 		return (1);
 	return (utils_valid_command(obj));

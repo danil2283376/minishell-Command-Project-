@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/15 19:21:43 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/02 12:03:10 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/06 10:32:40 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,10 @@ void	fn_pars_argument(t_obj *obj)
 	i = obj->flag.beg;
 	redir = 0;
 	if (obj->pars.line[i] == ';')
+	{
+		obj->pars.argument = ft_strdup("");
 		return ;
+	}
 	while (obj->pars.line[i] && obj->pars.line[i] != ';')
 	{
 		while (obj->pars.line[i] == '>' || obj->pars.line[i] == '<')
@@ -68,7 +71,9 @@ void	fn_pars_argument(t_obj *obj)
 			while (obj->pars.line[i] != obj->flag.quote && obj->pars.line[i])
 				i++;
 		}
-		if (obj->pars.line[i] != '\0' && obj->pars.line[i] != '>')
+		if (obj->pars.line[i] == '\\')
+			i += 2;
+		else if (obj->pars.line[i] != '\0' && obj->pars.line[i] != '>')
 			i++;
 		else if (obj->pars.line[i] == '\0' && redir == 0)
 		{

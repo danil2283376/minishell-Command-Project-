@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_split.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: scolen <scolen@student.42.fr>              +#+  +:+       +#+        */
+/*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/25 18:35:56 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/03 12:18:49 by scolen           ###   ########.fr       */
+/*   Updated: 2021/02/25 18:36:06 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ char		**ft_split(char const *s, char c)
 	i = 0;
 	if (!s)
 		return (NULL);
-	if (!(tmp = (char **)malloc((ft_wordcount(s, c) + 2) * sizeof(char *))))
+	if (!(tmp = (char **)malloc((ft_wordcount(s, c) + 1) * sizeof(char *))))
 		return (NULL);
 	while (s[i])
 	{

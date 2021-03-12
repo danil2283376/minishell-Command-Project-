@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/21 15:03:01 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/03 09:54:46 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/09 19:25:51 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,9 +42,12 @@ void	fn_valid_exi(t_obj *obj)
 		{
 			obj->flag.c_flag.exi = ft_atoi(obj->pars.argument);
 			if (obj->flag.c_flag.exi < 0)
-				obj->flag.c_flag.exi = 256;
-			while (obj->flag.c_flag.exi > 255)
-				obj->flag.c_flag.exi -= 256;
+				obj->flag.c_flag.exi = 255;
+			else
+			{
+				while (obj->flag.c_flag.exi > 255)
+					obj->flag.c_flag.exi -= 256;
+			}
 		}
 		exit(obj->flag.c_flag.exi);
 	}

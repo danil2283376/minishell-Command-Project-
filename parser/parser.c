@@ -3,48 +3,97 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: scolen <scolen@student.42.fr>              +#+  +:+       +#+        */
+/*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/14 10:52:41 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/03 12:29:26 by scolen           ###   ########.fr       */
+/*   Updated: 2021/03/10 17:02:47 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../libminishell.h"
-// cat -e -t
-int			threatment_command(t_obj *obj)
-{
-// 	char	*const* ad = "-e";
-	//У тебя есть obj->pars.command = cat
-	//И obj->pars.argument = ВСЁ ОСТАЛЬНОЕ, КРОМЕ ТОГО, ЧТО В КОМАНДЕ, ЯСНО ТЕБЕ?
-	// if (obj->pars.command[0] == 'c' && obj->pars.command[1] == 'a' && obj->pars.command[2] == 't' && (obj->pars.command[3] == '\0' || obj->pars.command[fn_space(obj->pars.command, 3)] == '\0'))
-		//CAT BLYAT;
-	char *new_str = "/bin/";
-	int error;
-	char **argv;
-	pid_t pid;
 
-	pid = fork();
-	if (pid == 0)
-	{
-		argv = ft_split(obj->pars.line, ' ');
-		new_str = ft_strjoin(new_str, obj->pars.command);
-		error = execve(new_str, &argv[0], obj->pars.envp);
-	}
-	else
-		wait(&pid);
-	return (1);
-}
+// int			threatment_command_for_path(t_obj *obj)
+// {
+// 	char	*path;
+// 	int		i;
+// 	int		k;
+// 	char	*new_str;
+// 	char	*save_arr;
+// 	int		error;
+// 	char 	**argv;
+// 	pid_t 	pid;
 
-void		fn_error_processing(t_obj *obj)
+// 	save_arr = ft_strjoin(obj->pars.command, " ");
+// 	save_arr = ft_strjoin(save_arr, obj->pars.argument);
+// 	pid = fork();
+// 	signal(3, fn_ctrl_sl);
+// 	if (pid == 0)
+// 	{
+// 		if (!(argv = ft_split(save_arr, ' ')))
+// 			fn_error("not memory allocate");
+// 		i = 0;
+// 		path = fn_search_enviroment(obj, "PATH");
+// 		error = -1;
+// 		while (error == -1 && path[i + 1])
+// 		{
+// 			k = i;
+// 			while (path[i] && path[i] != ':')
+// 				i++;
+// 			path[i] = '\0';
+// 			new_str = ft_strdup(&path[k]);
+// 			if (!(new_str = ft_strjoin(new_str, "/")))
+// 				fn_error("not memory allocate");
+// 			if (!(new_str = ft_strjoin(new_str, obj->pars.command)))
+// 				fn_error("not memory allocate");
+// 			error = execve(new_str, &argv[0], obj->pars.envp);
+// 			i++;
+// 		}
+// 		if (error == -1)
+// 			pid = 250;
+// 	}
+// 	else
+// 	{
+// 		wait(&pid);
+// 		if (pid == 0)
+// 			return (1);
+// 	}
+// 	return (0);
+// }
+
+// int			threatment_command(t_obj *obj)
+// {
+// 	char *new_str;
+// 	int error;
+// 	char **argv;
+// 	pid_t pid;
+
+// 	pid = fork();
+// 	signal(3, fn_ctrl_sl);
+// 	if (pid == 0)
+// 	{
+// 		if (!(argv = ft_split(obj->pars.line, ' ')))
+// 			fn_error("not memory allocate");
+// 		if (!(new_str = ft_strdup(obj->pars.command)))
+// 			fn_error("not memory allocate");
+// 		error = execve(new_str, &argv[0], obj->pars.envp);
+// 		if (error == -1)
+// 			return (0);
+// 	}
+// 	else
+// 		wait(&pid);
+// 	return (1);
+// }
+
+int		fn_error_processing(t_obj *obj)
 {
-	if (obj->pars.line[obj->flag.beg] == ';')
+	int		save;
+
+	if (obj->flag.without_mistake == 1)
+		obj->flag.beg = ft_strlen(obj->pars.line);
+	else if (obj->pars.line[obj->flag.beg] == ';')
 		write(1, "syntax error near unexpected token ';;'\n", 40);
-	else if (obj->flag.valid_com == 0)
-	{
-		if ((threatment_command(obj)) == 0)
-			fn_command_not_found(obj);
-	}
+	else if (obj->pars.line[obj->flag.beg] == '\0' && obj->pars.line[obj->flag.beg - 1] == ';' && fn_space(obj->pars.line, 0) == obj->flag.beg - 1)
+		write(1, "syntax error near unexpected token ';'\n",39);
 	else if (obj->flag.valid_redir == 0)
 	{
 		obj->flag.beg = ft_strlen(obj->pars.line);
@@ -82,13 +131,15 @@ void		fn_error_processing(t_obj *obj)
 		write(1, "minishell : multiple commands are prohibited by subject\n", 56);
 		obj->flag.beg = ft_strlen(obj->pars.line);
 	}
-	else if (obj->flag.valid_com != 0 && obj->flag.valid_redir == 1)
-		fn_valid_arg(obj);
+	if (obj->flag.valid_com != 0 && obj->flag.valid_redir == 1)
+		return (1);
+	return (0);
 }
 
 void		fn_init_flags(t_obj *obj)
 {
 	obj->flag.c_flag.exp = 0;
+	obj->flag.without_mistake = 0;
 	obj->flag.c_flag.fl_ec = 0;
 	obj->flag.c_flag.envir = 0;
 	obj->flag.c_flag.un = 0;
@@ -104,8 +155,9 @@ void		fn_init_flags(t_obj *obj)
 	obj->flag.beg = fn_space(obj->pars.line, obj->flag.beg);
 }
 
-void		fn_pars_line(t_obj *obj)
+int		fn_pars_line(t_obj *obj)
 {
+	fn_check_environment_variable(obj);
 	fn_init_flags(obj);
 	obj->pars.arg_for_back_redirect = NULL;
 	obj->pars.command = NULL;
@@ -113,9 +165,10 @@ void		fn_pars_line(t_obj *obj)
 	fn_pars_command(obj);
 	if (obj->pars.line[obj->flag.beg] == ';')
 		obj->flag.beg++;
+	if (fn_error_processing(obj) == 0)
+		return (0);
 	if (obj->flag.exist_pipe == 0)
-		fn_error_processing(obj);
+		fn_process_for_pipes(obj);
 	obj->flag.beg = fn_space(obj->pars.line, obj->flag.beg);
-	if (obj->pars.line[obj->flag.beg] != '\0')
-		fn_pars_line(obj);
+	return (1);
 }

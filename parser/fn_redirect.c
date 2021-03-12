@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/22 10:42:40 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/02 14:00:08 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/09 18:57:06 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ int		fn_redirect(t_obj *obj)
 	int		i;
 
 	obj->flag.beg += 1;
-	i = fn_space(obj->pars.line, obj->flag.beg);
+	i = obj->flag.beg;
 	obj->redirect.count_red = 0;
 	while (obj->pars.line[i] == '>' && obj->pars.line[i] && obj->pars.line[i] != ';')
 	{
@@ -30,13 +30,47 @@ int		fn_redirect(t_obj *obj)
 		obj->flag.valid_redir = 0;
 		return (-1);
 	}
-	else if (obj->pars.line[i] == '\0')
+	else if (obj->pars.line[fn_space(obj->pars.line, i)] == '\0' && obj->flag.exist_pipe == 0)
 	{
 		obj->flag.valid_redir = -1;
 		return (-1);
 	}
 	i = fn_space(obj->pars.line, obj->flag.beg);
 	obj->flag.beg = fn_space(obj->pars.line, obj->flag.beg);
+	if (obj->pars.line[obj->flag.beg] == '<')
+	{
+		obj->redirect.count_red = 2;
+		while(obj->pars.line[obj->flag.beg] == '<')
+		{
+			obj->flag.beg++;
+			obj->redirect.count_red++;
+		}
+		obj->flag.valid_back_red = 0;
+		return (-1);
+	}
+	else if (obj->pars.line[obj->flag.beg] == '>')
+	{
+		obj->redirect.count_red = 2;
+		while(obj->pars.line[obj->flag.beg] == '>')
+		{
+			obj->flag.beg++;
+			obj->redirect.count_red+=1;
+		}
+		obj->flag.valid_redir = 0;
+		return (-1);
+	}
+	else if (obj->pars.line[obj->flag.beg] == ';')
+	{
+		i = 0;
+		while (obj->pars.line[obj->flag.beg++] == ';')
+			i++;
+		if (i > 1)
+			write(1, "minishell: syntax error near unexpected token ';;'\n", 51);
+		else
+			write(1, "minishell: syntax error near unexpected token ';'\n", 50);
+		obj->flag.without_mistake = 1;
+		return (-1);
+	}
 	while (obj->pars.line[i] != ' ' && obj->pars.line[i] != '\0' && obj->pars.line[i] != '>' && obj->pars.line[i] != ';')
 	{
 		if (obj->pars.line[i] == '\"' || obj->pars.line[i] == '\'')

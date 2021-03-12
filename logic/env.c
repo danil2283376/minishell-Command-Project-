@@ -104,7 +104,8 @@ void			export_varible_in_env(t_list *env_list,
 			k++;
 		}
 		free(copy);
-		char *new_line = ft_strjoin(name_varible, "="); // MALLOC
+		char *new_line;
+		new_line = ft_strjoin(name_varible, "="); // MALLOC
 		new_line = ft_strjoin(new_line, value_varible); // MALLOC
 		copy_before->next = ft_lstnew(new_line);
 		copy_before->next->next = copy_after;
@@ -114,13 +115,14 @@ void			export_varible_in_env(t_list *env_list,
 		char *new_line;
 		if (value_varible[0] == '\0')
 		{
-			new_line = ft_strdup(name_varible);
+			new_line = ft_strdup(name_varible); //MALLOC
 			ft_lstadd_back(&env_list, ft_lstnew(new_line));
 		}
 		else
 		{
-			new_line = ft_strjoin(name_varible, "="); // MALLOC
-			new_line = ft_strjoin(new_line, value_varible); // MALLOC
+			new_line = ft_strjoin(name_varible, "="); //MALLOC
+			if (*value_varible != '\n')
+				new_line = ft_strjoin(new_line, value_varible); // MALLOC
 			ft_lstadd_back(&env_list, ft_lstnew(new_line));
 		}
 	}

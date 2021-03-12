@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libminishell.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: scolen <scolen@student.42.fr>              +#+  +:+       +#+        */
+/*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/14 13:08:24 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/03 12:27:38 by scolen           ###   ########.fr       */
+/*   Updated: 2021/03/10 15:42:14 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,6 @@
 # include "libasm/libasm.h"
 # include "strminishell.h"
 # include "parser/fn_validation_for_argument/validator.h"
-# include <sys/wait.h>
-# include <sys/types.h>
 
 void	ft_lstadd_front(t_list **lst, t_list *new);
 int		ft_lstsize(t_list *lst);
@@ -47,7 +45,7 @@ void	export_varible_in_env(t_list *env_list,
 		char *name_varible, char *value_varible);
 char	**ft_split(char const *s, char c);
 int		fn_space(char *line, int i);
-void	fn_pars_line(t_obj *obj);
+int		fn_pars_line(t_obj *obj);
 void	fn_pars_command(t_obj *obj);
 void	*ft_bzero(void *s, size_t n);
 void	*ft_calloc(size_t nmemb, size_t size);
@@ -66,9 +64,11 @@ void	fn_pars_argument(t_obj *obj);
 int		fn_valid_command(t_obj *obj);
 void	fn_valid_arg(t_obj *obj);
 int		fn_redirect(t_obj *obj);
-void	fn_process_for_pipes(t_obj *obj);
+int		fn_process_for_pipes(t_obj *obj);
 char	*fn_search_enviroment(t_obj *obj, char *name);
 void	fn_check_environment_variable(t_obj *obj);
 int		fn_back_redirect(t_obj *obj);
 char	*ft_itoa(int n);
+void	fn_ctrl_sl(int key);
+char	*fn_search_enviroment(t_obj *obj, char *name);
 #endif

@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/21 14:52:54 by melisha           #+#    #+#             */
-/*   Updated: 2021/02/28 12:27:01 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/03 21:07:04 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ static	void	fn_fill_val(t_obj *obj, int start, int i)
 	char	*name;
 	char	*value;
 	char	*arg;
+	char	ch;
 	int		j;
 	int		k;
 	int		f;
@@ -40,16 +41,19 @@ static	void	fn_fill_val(t_obj *obj, int start, int i)
 		f = 0;
 		while (name[++k])
 		{
-			if ((name[k] <= '0' || name[k] >= '9') && name[k])
+			if ((name[k] <= '0' || name[k] >= '9') && name[k] && name[k] != '+')
 				f = 1;
-			else if (name[k] >= '0' && name[k] <= '9' && f != 1)
+			else if ((name[k] >= '0' && name[k] <= '9' && f != 1) || name[k] == '+')
 			{
 				fn_not_an_identifier(obj, arg);
 				return ;
 			}
 		}
 		if ((arg[j] == '\0' || arg[j] == ' ') && fn_search_enviroment(obj, name) == NULL)
-			export_varible_in_env(&obj->export_list, name, "\"\"");
+		{
+			export_varible_in_env(&obj->export_list, name, "\n");
+			export_varible_in_env(&obj->env_list, name, "\n");
+		}
 		else if (fn_search_enviroment(obj, name) != NULL)
 			return ;
 		else
@@ -60,7 +64,9 @@ static	void	fn_fill_val(t_obj *obj, int start, int i)
 			if (!(value = ft_substr(arg, start, j - start)))
 				fn_error("not memory allocate\n");
 			export_varible_in_env(&obj->env_list, name, value);
-			export_varible_in_env(&obj->export_list, name, value);
+			if (value[0] == '\"' || value[0] == '\'')
+				value = ft_strjoin("\\", value);
+					export_varible_in_env(&obj->export_list, name, value);
 		}
 	}
 	else
@@ -73,7 +79,7 @@ static	void	fn_fill_val(t_obj *obj, int start, int i)
 		{
 			if ((name[k] <= '0' || name[k] >= '9') && name[k])
 				f = 1;
-			else if (name[k] >= '0' && name[k] <= '9' && f != 1)
+			else if (name[k] >= '0' && name[k] <= '9' && f != 1 && name[k] == '+')
 			{
 				fn_not_an_identifier(obj, arg);
 				return ;

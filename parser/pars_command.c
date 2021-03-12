@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/14 17:21:56 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/02 10:17:01 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/06 10:25:54 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,9 @@ void	fn_pars_command(t_obj *obj)
 			while (obj->pars.line[i] != obj->flag.quote && obj->pars.line[i])
 				i++;
 		}
-		if (obj->pars.line[i] != '\0')
+		if (obj->pars.line[i] == '\\')
+			i += 2;
+		else if (obj->pars.line[i] != '\0')
 			i++;
 		else
 		{
@@ -52,7 +54,6 @@ void	fn_pars_command(t_obj *obj)
 	if (!(obj->pars.command = ft_substr(obj->pars.line, obj->flag.beg, i - obj->flag.beg)))
 		fn_error("not memory allocate");
 	obj->pars.command = fn_circumcision(obj->pars.command, obj);
-	obj->flag.valid_com = fn_valid_command(obj);
 	obj->flag.beg = i;
 	fn_pars_argument(obj);
 }

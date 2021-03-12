@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/22 15:13:19 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/02 12:06:31 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/03 14:09:16 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,13 @@ char	*fn_circumcision_fill(char *line, int len, t_obj *obj)
 			while (line[++i] != ch && line[i])
 				com[len++] = line[i];
 			ch = 0;
+			i++;
+		}
+		while (line[i] == '\\')
+		{
+			i++;
+			com[len] = line[i];
+			len++;
 			i++;
 		}
 		if (line[i] == ' ')
@@ -90,6 +97,11 @@ char	*fn_circumcision(char *line, t_obj *obj)
 				len++;
 			ch = 0;
 			i++;
+		}
+		while (line[i] == '\\')
+		{
+			i+=2;
+			len+=1;
 		}
 		if (line[i] == ' ')
 		{

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   strminishell.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: scolen <scolen@student.42.fr>              +#+  +:+       +#+        */
+/*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/14 13:09:25 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/03 11:41:46 by scolen           ###   ########.fr       */
+/*   Updated: 2021/03/10 16:58:44 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,10 @@ typedef struct		s_com_flags
 	int		pw;
 	int		envir;
 }					t_com_flags;
+typedef struct		s_pipe_flag
+{
+	int				count_pipe;
+}					t_pipe_flag;
 typedef struct		s_flags
 {
 	int				beg;
@@ -43,7 +47,9 @@ typedef struct		s_flags
 	int				valid_back_red;
 	int				back_redirect;
 	int				environment_variable;
+	int				without_mistake;
 	t_com_flags		c_flag;
+	t_pipe_flag		p_flag;
 }					t_flags;
 typedef struct		s_redirect
 {
@@ -54,18 +60,28 @@ typedef struct		s_redirect
 typedef struct		s_pars
 {
 	char			*line;
-	char			**line_for_pipe;
+	char			**split_string;
+	char			**line_for_pipe; // строки комманд и аргументов
+	char			**command_for_pipe; // комманды в двумерном массиве
+	char			**argument_for_pipe; // аргументы комманд в двумерном массиве
 	char			*redirect;
 	char			*arg_for_back_redirect;
 	char			*command;
 	char			*argument;
 	char			**envp;
 }					t_pars;
+typedef struct		s_standart_out
+{
+	int	fd_in;
+	int fd_out;
+	int	fd_pipe[2];
+}					t_standart_out;
 typedef struct		s_obj
 {
 	t_redirect		redirect;
 	t_flags			flag;
 	t_pars			pars;
+	t_standart_out	standart_fd;
 	t_list		env_list;
 	t_list		export_list;
 }					t_obj;
