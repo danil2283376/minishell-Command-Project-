@@ -51,6 +51,77 @@ char 	*delete_space(t_obj *obj)
 // 	}
 // }
 
+char	*ft_my_strjoin(char const *s1, char const *s2)
+{
+	unsigned int	len_s1;
+	unsigned int	len_s2;
+	char			*ptr;
+	unsigned int	start_ptr;
+	unsigned int	start_s;
+
+	if (s1 == NULL || s2 == NULL)
+		return (NULL);
+	len_s1 = ft_strlen(s1);
+	len_s2 = ft_strlen(s2);
+	start_ptr = 0;
+	start_s = 0;
+	ptr = (char *)malloc((len_s1 + len_s2) + 1);
+	if (ptr == NULL)
+		return (NULL);
+	while (start_s < len_s1)
+		ptr[start_ptr++] = s1[start_s++];
+	start_s = 0;
+	while (start_s < len_s2)
+		ptr[start_ptr++] = s2[start_s++];
+	ptr[start_ptr] = '\0';
+	return (ptr);
+}
+
+void	search_command_varible_path(t_obj *obj, int o) 
+{
+	int i;
+	int j;
+	int k;
+	char *varible_path;
+	char *new_path;
+	int error;
+
+	i = 0;
+	j = 0;
+	k = 0;
+	varible_path = fn_search_enviroment(obj, "PATH");
+	// printf("varible_path = %s\n", varible_path);
+	while (varible_path[i] != '\0')
+	{
+		while (varible_path[j] != ':')
+			j++;
+		new_path = malloc(j + 1);
+		while (/*k < j*/ varible_path[i] != ':' && varible_path[i] != '\0')
+		{
+			new_path[k] = varible_path[i++];
+			k++;
+		}
+		new_path[k] = '\0';
+		new_path = ft_my_strjoin(new_path, "/");
+		// write(1, "1", 1);
+		new_path = ft_my_strjoin(new_path, obj->pars.command_for_pipe[o]);
+		// printf("path = %s|\n", new_path);
+		// write(1, "2", 1);
+		// printf("command: %s\n", obj->pars.command_for_pipe[o]);
+		// char *new_str = "/bin/";
+		// new_str = ft_strjoin(new_str, obj->pars.command_for_pipe[i]);
+		char **argv;
+		argv = ft_split(obj->pars.line_for_pipe[o], ' ');
+		error = execve(new_path, &argv[0]/*&obj->pars.line_for_pipe[i]*/, obj->pars.envp);
+		// printf("%s\n", obj->pars.command_for_pipe[o]);
+		if (varible_path[i] == ':')
+			i++;
+		j = 0;
+		k = 0;
+		free(new_path);
+	}
+}
+
 int		threatment_pipe(t_obj *obj)
 {
 	pid_t pid;
@@ -63,8 +134,9 @@ int		threatment_pipe(t_obj *obj)
 	error = 0;
 	last_command = 0;
 	delete_space(obj);
-	printf("\n\nWRITE!!!\n\n");
-	while (i < obj->flag.p_flag.count_pipe) 
+	// search_command_varible_path(obj);
+	// printf("\n\nWRITE!!!\n\n");
+	while (i < obj->flag.p_flag.count_pipe)
 	{
 		if (i < obj->flag.p_flag.count_pipe - 1)
 			pipe(fd);
@@ -73,11 +145,12 @@ int		threatment_pipe(t_obj *obj)
 			dup2(fd[1], 1); // меняю fd на вывод информации комманды
 			close(fd[0]);
 			close(fd[1]);
-			char *new_str = "/bin/";
-			new_str = ft_strjoin(new_str, obj->pars.command_for_pipe[i]);
-			char **argv;
-			argv = ft_split(obj->pars.line_for_pipe[i], ' ');
-			error = execve(new_str, &argv[0]/*&obj->pars.line_for_pipe[i]*/, obj->pars.envp);
+			search_command_varible_path(obj, i);
+			// char *new_str = "/bin/";
+			// new_str = ft_strjoin(new_str, obj->pars.command_for_pipe[i]);
+			// char **argv;
+			// argv = ft_split(obj->pars.line_for_pipe[i], ' ');
+			// error = execve(new_str, &argv[0]/*&obj->pars.line_for_pipe[i]*/, obj->pars.envp);
 			exit(1);
 		}
 		else // родитель
@@ -91,7 +164,7 @@ int		threatment_pipe(t_obj *obj)
 	}
 	dup2(obj->standart_fd.fd_in, 0);
 	// dup2(obj->standart_fd.fd_in, 1);
-	printf("i = %d\n", obj->flag.p_flag.count_pipe - 1);
+	// printf("i = %d\n", obj->flag.p_flag.count_pipe - 1);
 	return (1);
 }
 
@@ -188,6 +261,7 @@ int		fn_process_for_pipes(t_obj *obj)
 			{
 				// printf("HELL\n");
 				// ХЗ ГДЕ ЛЕЖИТ 1 КОММАНДА
+				// search_command_varible_path(obj, 0);
 				char *new_str = "/bin/";
 				new_str = ft_strjoin(new_str, obj->pars.command);
 				char **argv;
