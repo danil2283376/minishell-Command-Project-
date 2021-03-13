@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/14 13:08:24 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/10 15:42:14 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/13 14:09:54 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,4 +71,5 @@ int		fn_back_redirect(t_obj *obj);
 char	*ft_itoa(int n);
 void	fn_ctrl_sl(int key);
 char	*fn_search_enviroment(t_obj *obj, char *name);
+int		ft_strcmp(char *s1, char *s2);
 #endif

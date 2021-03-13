@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/14 12:32:19 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/03 12:46:36 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/13 13:32:29 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	fn_command_not_found(t_obj *obj)
 	write(1, "minishell : ", 12);
 	write(1, obj->pars.command, ft_strlen(obj->pars.command));
 	write(1, " : command not found\n", 21);
-	exit(0);
+	exit(errno);
 }
 
 void	fn_numberic_argument_required(t_obj *obj)
