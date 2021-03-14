@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/14 10:52:41 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/10 17:02:47 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/13 16:01:25 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,7 +131,7 @@ int		fn_error_processing(t_obj *obj)
 		write(1, "minishell : multiple commands are prohibited by subject\n", 56);
 		obj->flag.beg = ft_strlen(obj->pars.line);
 	}
-	if (obj->flag.valid_com != 0 && obj->flag.valid_redir == 1)
+	else if (obj->flag.valid_com != 0 && obj->flag.valid_redir == 1)
 		return (1);
 	return (0);
 }

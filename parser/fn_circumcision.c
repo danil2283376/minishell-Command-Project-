@@ -28,7 +28,7 @@ char	*fn_circumcision_fill(char *line, int len, t_obj *obj)
 	{
 		if (line[i] == ';')
 			break ;
-		if (line[i] == '>' || line[i] == '<')
+		if ((line[i] == '>' || line[i] == '<') && obj->flag.exist_pipe == 0)
 		{
 			redch = line[i];
 			while (line[i] == redch)
@@ -79,7 +79,7 @@ char	*fn_circumcision(char *line, t_obj *obj)
 	{
 		if (line[i] == ';')
 			break ;
-		if (line[i] == '>' || line[i] == '<')
+		if ((line[i] == '>' || line[i] == '<') && obj->flag.exist_pipe == 0)
 		{
 			redch = line[i];
 			while (line[i] == redch)

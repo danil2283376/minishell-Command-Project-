@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/22 10:42:40 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/09 18:57:06 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/13 16:05:32 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,18 +57,6 @@ int		fn_redirect(t_obj *obj)
 			obj->redirect.count_red+=1;
 		}
 		obj->flag.valid_redir = 0;
-		return (-1);
-	}
-	else if (obj->pars.line[obj->flag.beg] == ';')
-	{
-		i = 0;
-		while (obj->pars.line[obj->flag.beg++] == ';')
-			i++;
-		if (i > 1)
-			write(1, "minishell: syntax error near unexpected token ';;'\n", 51);
-		else
-			write(1, "minishell: syntax error near unexpected token ';'\n", 50);
-		obj->flag.without_mistake = 1;
 		return (-1);
 	}
 	while (obj->pars.line[i] != ' ' && obj->pars.line[i] != '\0' && obj->pars.line[i] != '>' && obj->pars.line[i] != ';')

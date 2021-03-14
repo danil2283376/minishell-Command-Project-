@@ -50,7 +50,7 @@ void	fn_pars_argument(t_obj *obj)
 	}
 	while (obj->pars.line[i] && obj->pars.line[i] != ';')
 	{
-		while (obj->pars.line[i] == '>' || obj->pars.line[i] == '<')
+		while ((obj->pars.line[i] == '>' || obj->pars.line[i] == '<') && obj->flag.exist_pipe == 0)
 		{
 			redir = obj->flag.beg;
 			obj->flag.beg = i;
@@ -73,7 +73,7 @@ void	fn_pars_argument(t_obj *obj)
 		}
 		if (obj->pars.line[i] == '\\')
 			i += 2;
-		else if (obj->pars.line[i] != '\0' && obj->pars.line[i] != '>')
+		else if (obj->pars.line[i] != '\0' && (obj->pars.line[i] != '>' || obj->flag.exist_pipe == 1))
 			i++;
 		else if (obj->pars.line[i] == '\0' && redir == 0)
 		{

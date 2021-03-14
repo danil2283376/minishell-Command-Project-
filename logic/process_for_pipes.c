@@ -182,6 +182,7 @@ int		threatment_pipe(t_obj *obj)
 		}
 		else
 		{
+			if (obj->pars.argument_for_pipe[i])
 			dup2(fd[0], 0);
 			close(fd[0]);
 			close(fd[1]);
@@ -196,6 +197,50 @@ int		threatment_pipe(t_obj *obj)
 int		threatment_command(t_obj *obj)
 {
 	return (1);
+}
+
+int	threatment_solo_command(t_obj *obj, int o) 
+{
+	int i;
+	int j;
+	int k;
+	char *varible_path;
+	char *new_path;
+	int error;
+	char **argv;
+
+	i = 0;
+	error = 0;
+	varible_path = fn_search_enviroment(obj, "PATH");
+	printf("SOSAT!\n");
+	write (2, obj->pars.line_for_pipe[o], ft_strlen(obj->pars.line_for_pipe[o]));
+	argv = ft_split(obj->pars.line_for_pipe[o], ' ');
+	write(1, "1", 1);
+	printf("%s\n", varible_path);
+	while (varible_path[i] != '\0')
+	{
+		while (varible_path[j] != ':')
+			j++;
+		new_path = malloc(j + 1);
+		while (varible_path[i] != ':' && varible_path[i] != '\0')
+		{
+			new_path[k] = varible_path[i++];
+			k++;
+		}
+		new_path[k] = '\0';
+		new_path = ft_my_strjoin(new_path, "/");
+		new_path = ft_my_strjoin(new_path, obj->pars.command_for_pipe[o]);
+		// argv = ft_split(obj->pars.line_for_pipe[o], ' ');
+		// obj->pars.line = ft_strdup(obj->pars.line_for_pipe[o]);
+		printf("%s\n", new_path);
+		error = execve(new_path, &argv[0], obj->pars.envp);
+		if (varible_path[i] == ':')
+			i++;
+		j = 0;
+		k = 0;
+		free(new_path);
+	}
+	return (error);
 }
 
 int		fn_process_for_pipes(t_obj *obj)

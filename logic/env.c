@@ -6,6 +6,8 @@ void			add_list_env(t_list *env_list, t_list *export_list, char **envp)
 	int j;
 	char *key;
 	char *value;
+	char *name;
+	t_list	*copy;
 
 	i = 0;
 	j = 0;
@@ -14,6 +16,33 @@ void			add_list_env(t_list *env_list, t_list *export_list, char **envp)
 		ft_lstadd_back(&env_list, ft_lstnew(envp[i]));
 		ft_lstadd_back(&export_list, ft_lstnew(envp[i]));
 		i++;
+	}
+	copy = env_list->next;
+	name = ft_strdup("SHLVL");
+	while (copy)
+	{
+		i = 0;
+		key = (char *)(copy->content);
+		while (key[i] == name[i] && key[i] && name[i] && key[i] != '=')
+			i++;
+		if (i == ft_strlen(name))
+		{
+			i++;
+			if (!(value = ft_substr(key, i, ft_strlen(key) - i)))
+				fn_error("not memory allocate");
+		}
+		copy = copy->next;
+	}
+	if (value != NULL)
+	{
+		value = (ft_itoa(ft_atoi(value) + 1));
+		export_varible_in_env(env_list, name, value);
+		export_varible_in_env(export_list, name, value);
+	}
+	else
+	{
+		export_varible_in_env(env_list, name, "1");
+		export_varible_in_env(export_list, name, "1");
 	}
 }
 
