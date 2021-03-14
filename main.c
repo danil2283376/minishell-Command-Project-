@@ -111,6 +111,7 @@ int		main(int argc, char **argv, char **envp)
 	{
 		j = 0;
 		obj.pars.split_string = ft_split(obj.pars.line, ';');
+		obj.flag.after_redir = 0;
 		if (fn_check_before_redirect(&obj) != 0)
 		{
 			while (obj.pars.split_string[j] != NULL)
@@ -125,10 +126,13 @@ int		main(int argc, char **argv, char **envp)
 				else
 				{
 					i = 0;
-					if (!(obj.pars.line_for_pipe = ft_split(obj.pars.line, 124)))
+					obj.pars.line_for_pipe = NULL;
+					if (!(obj.pars.line_for_pipe = ft_split(obj.pars.line, '|')))
 						fn_error("not memory allocate\n");
 					while (obj.pars.line_for_pipe[i] != NULL)
+					{
 						i++;
+					}
 					obj.flag.p_flag.count_pipe = i; //КОЛИЧЕСТВО ПАЙПОВ БЛЯТЬ
 					obj.pars.command_for_pipe = malloc(sizeof(char *) * (i + 2));
 					obj.pars.command_for_pipe[i + 1] = NULL;

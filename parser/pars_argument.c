@@ -54,6 +54,7 @@ void	fn_pars_argument(t_obj *obj)
 		{
 			redir = obj->flag.beg;
 			obj->flag.beg = i;
+			// write(1, "1", 1);
 			if (obj->pars.line[i] == '>')
 				i = fn_redirect(obj);
 			else

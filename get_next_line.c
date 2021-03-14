@@ -23,7 +23,8 @@ int		get_next_line(char **line, int fd)
 		return (-1);
 	while ((j = read(fd, &buf[i], 1)) > 0 && buf[i] != '\n' && buf[i] != '\0')
 		i++;
-	buf[i] = '\0';
+	buf[i] =  ' ';
+	buf[i + 1] = '\0';
 	*line = buf;
 	return (j);
 }

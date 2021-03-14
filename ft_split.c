@@ -12,83 +12,80 @@
 
 #include "libminishell.h"
 
-static int	ft_wordcount(char const *s, char c)
+static int	quantity_words(char const *s, char c)
 {
-	int		k;
-	int		i;
+	unsigned int start;
+	unsigned int quantity_word;
 
-	k = 0;
-	i = 0;
-	while (s[i] && s[i] == c)
-		i++;
-	while (s[i])
+	start = 0;
+	quantity_word = 0;
+	while (s[start] && s[start + 1])
 	{
-		if (s[i] == c)
-		{
-			while (s[i] == c)
-				i++;
-			if (s[i])
-				k++;
-		}
-		i++;
+		if (s[start] == c && s[start + 1] != c)
+			quantity_word++;
+		start++;
 	}
-	k = k + 1;
-	return (k);
+	return (quantity_word);
 }
 
-static int	ft_wordlen(char const *s, char c)
+static int	length_word(char const *s, char c)
 {
-	int		i;
+	unsigned int start;
 
-	i = 0;
-	while (s[i] && s[i] != c)
-	{
-		i++;
-	}
-	return (i);
+	start = 0;
+	while (s[start] != c && s[start] != '\0')
+		start++;
+	return (start);
 }
 
-static char	**ft_cleaner(char **tmp)
+static char	**free_array(char **ptr)
 {
-	int		i;
-	int		j;
-
-	j = 0;
-	while (*tmp[j++])
-	{
-		i = 0;
-		while (tmp[j][i++])
-			free(*tmp);
-	}
-	free(tmp);
+	free(ptr);
 	return (NULL);
+}
+
+static char	*excretion_memory(char *ptr, char const *s, long len_w)
+{
+	unsigned int start;
+	unsigned int len_word;
+
+	len_word = 0;
+	start = 0;
+	ptr = (char *)malloc((len_w + 1) * sizeof(char));
+	if (ptr == NULL)
+		return (*free_array(&ptr));
+	while (start < len_w)
+	{
+		ptr[start] = s[start];
+		start++;
+	}
+	ptr[start] = '\0';
+	return (ptr);
 }
 
 char		**ft_split(char const *s, char c)
 {
-	char	**tmp;
-	int		i;
-	int		j;
+	char **ptr;
+	long arr[3];
 
-	j = 0;
-	i = 0;
-	if (!s)
+	if (s == NULL)
 		return (NULL);
-	if (!(tmp = (char **)malloc((ft_wordcount(s, c) + 1) * sizeof(char *))))
-		return (NULL);
-	while (s[i])
+	if (!(ptr = (char **)malloc((quantity_words(s, c) + 2) * sizeof(char *))))
+		return (free_array(ptr));
+	arr[0] = 1;
+	arr[1] = 0;
+	arr[2] = 0;
+	while (s[arr[1]] != '\0')
 	{
-		while (s[i] == c && s[i])
-			i++;
-		if (!s[i])
-			break ;
-		tmp[j] = ft_substr(&s[i], 0, ft_wordlen(&s[i], c));
-		if (!tmp[j])
-			return (ft_cleaner(tmp));
-		while (s[i] && s[i] != c)
-			i++;
-		j++;
+		if (s[arr[1]] != c)
+		{
+			arr[0] = length_word(&s[arr[1]], c);
+			ptr[arr[2]] = excretion_memory(ptr[arr[2]], &s[arr[1]], arr[0]);
+			arr[2]++;
+		}
+		arr[1] = arr[1] + arr[0];
+		arr[0] = 1;
 	}
-	tmp[j] = 0;
-	return (tmp);
+	ptr[arr[2]] = NULL;
+	return (ptr);
 }

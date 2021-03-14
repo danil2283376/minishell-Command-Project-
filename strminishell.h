@@ -38,6 +38,7 @@ typedef struct		s_pipe_flag
 typedef struct		s_flags
 {
 	int				beg;
+	int				after_redir;
 	int				exist_pipe;
 	char			quote;
 	int				multiple_com;

@@ -81,8 +81,8 @@ int		fn_back_redirect(t_obj *obj)
 	if (!(obj->pars.redirect = ft_substr(obj->pars.line, obj->flag.beg, i - obj->flag.beg)))
 		fn_error("not memory allocate");
 	obj->pars.redirect = fn_circumcision(obj->pars.redirect, obj);
-	printf("back red = %s*\n", obj->pars.redirect);
 	obj->redirect.fd_back_redirect = open(obj->pars.redirect, O_RDONLY, 0666);
+	printf("back red = %s*\n", obj->pars.redirect);
 	if (obj->redirect.fd_back_redirect == -1)
 	{
 		obj->flag.valid_back_red = -1;
@@ -90,21 +90,10 @@ int		fn_back_redirect(t_obj *obj)
 	}
 	if (obj->redirect.count_red == 1)
 	{
-		write(1, ">", 1);
+		write(1, ">", 1); //ERRRORORORORORRORORORROOORROOOROROITORITORTIO
 		while (get_next_line(&arg, 0) > 0)
 		{
 			write(1, ">", 1);
-			if (!obj->pars.arg_for_back_redirect)
-				obj->pars.arg_for_back_redirect = ft_strdup(arg);
-			else
-				obj->pars.arg_for_back_redirect = ft_strjoin(obj->pars.arg_for_back_redirect, arg);
-			obj->pars.arg_for_back_redirect = ft_strjoin(obj->pars.arg_for_back_redirect, "\n");
-		}
-	}
-	else if (obj->redirect.count_red == 0)
-	{
-		while ((get_next_line(&arg, obj->redirect.fd_back_redirect)) > 0)
-		{
 			if (!obj->pars.arg_for_back_redirect)
 				obj->pars.arg_for_back_redirect = ft_strdup(arg);
 			else
