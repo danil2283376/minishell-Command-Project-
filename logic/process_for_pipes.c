@@ -124,8 +124,6 @@ void	search_command_varible_path(t_obj *obj, int o)
 			new_path[k] = '\0';
 			new_path = ft_my_strjoin(new_path, "/");
 			new_path = ft_my_strjoin(new_path, obj->pars.command_for_pipe[o]);
-			// argv = ft_split(obj->pars.line_for_pipe[o], ' ');
-			// obj->pars.line = ft_strdup(obj->pars.line_for_pipe[o]);
 			error = execve(new_path, &argv[0], obj->pars.envp);
 			if (varible_path[i] == ':')
 			{
@@ -146,7 +144,7 @@ void	search_command_varible_path(t_obj *obj, int o)
 				write(2, " : command not found\n", 21);
 				exit(errno);
 			}
-		} 
+		}
 		free_double_array(argv);
 	}
 	else if (obj->flag.valid_com != 0 && obj->flag.valid_redir == 1) //Выполняю НАШИ функции (echo)
@@ -174,19 +172,46 @@ int		threatment_pipe(t_obj *obj)
 			pipe(fd);
 		if ((pid = fork()) == 0)
 		{
-			dup2(fd[1], 1);
-			close(fd[0]);
-			close(fd[1]);
-			search_command_varible_path(obj, i);
+			if (obj->redirect.fd != 1)
+			{
+				dup2(obj->redirect.fd, 1);
+				close(fd[0]);
+				close(fd[1]);
+				// search_command_varible_path(obj, i);
+			}
+			else
+			{
+				dup2(fd[1], 1);
+				close(fd[0]);
+				close(fd[1]);
+				search_command_varible_path(obj, i);
+			}
 			exit(1);
 		}
 		else
 		{
-			if (obj->pars.argument_for_pipe[i])
-			dup2(fd[0], 0);
-			close(fd[0]);
-			close(fd[1]);
-			wait(&pid);
+			obj->flag.beg = 0;
+			obj->pars.line = ft_strdup(obj->pars.line_for_pipe[i]);
+			fn_pars_line(obj);
+			if (obj->redirect.fd != 1)
+			{
+				obj->flag.beg = 0;
+				obj->pars.line = ft_strdup(obj->pars.line_for_pipe[i]);
+				obj->flag.exist_pipe = 0;
+				fn_pars_line(obj);
+				obj->flag.exist_pipe = 1;
+				// dup2(obj->redirect.fd, 0);
+				close(fd[0]);
+				close(fd[1]);
+				wait(&pid);
+			}
+			else
+			{
+				dup2(fd[0], 0);
+				close(fd[0]);
+				close(fd[1]);
+				wait(&pid);
+			}
 		}
 		i++;
 	}

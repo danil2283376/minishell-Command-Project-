@@ -21,7 +21,7 @@ void	fn_pars_command(t_obj *obj)
 	i = obj->flag.beg;
 	obj->flag.quote = '\0';
 	obj->redirect.fd = 1;
-	while ((obj->pars.line[i] == '>' || obj->pars.line[i] == '<') && obj->flag.exist_pipe == 0)
+	while (obj->pars.line[i] == '>' || obj->pars.line[i] == '<')
 	{
 		if (obj->pars.line[i] == '>')
 			i = fn_redirect(obj);
@@ -32,7 +32,7 @@ void	fn_pars_command(t_obj *obj)
 		i = fn_space(obj->pars.line, i);
 	}
 	while (obj->pars.line[i] != ' ' && obj->pars.line[i] != ';'
-	&& obj->pars.line[i] && (obj->pars.line[i] != '>' || obj->flag.exist_pipe == 1))
+	&& obj->pars.line[i] && obj->pars.line[i] != '>')
 	{
 		if (obj->pars.line[i] == '\"' || obj->pars.line[i] == '\'')
 		{
