@@ -6,17 +6,11 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/25 18:59:03 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/15 17:27:35 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/15 19:24:39 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../libminishell.h"
-
-void	fn_ctrl_sl(int key)
-{
-	write(1, "Quit: 3\n", 9);
-	return ;
-}
 
 /* 
 *	obj->pars 		// местоположение
@@ -135,7 +129,7 @@ void	search_command_varible_path(t_obj *obj, int o)
 		free_double_array(argv);
 		obj->redirect.fd_back_redirect = 0;
 	}
-	else if (obj->flag.valid_com != 0 && obj->flag.valid_redir == 1) //Выполняю НАШИ функции (echo)
+	else if (obj->flag.valid_com != 0 && obj->flag.valid_redir == 1)
 	{
 		obj->pars.argument = ft_strdup(obj->pars.argument_for_pipe[o]);
 		fn_valid_arg(obj);
@@ -162,7 +156,7 @@ int		fn_check_red(t_obj *obj, int i)
 
 int		threatment_pipe(t_obj *obj)
 {
-	pid_t pid;
+	// pid_t pid;
 	int fd[2];
 	int i;
 	int error;
@@ -175,7 +169,7 @@ int		threatment_pipe(t_obj *obj)
 	{
 		if (i < obj->flag.p_flag.count_pipe - 1)
 			pipe(fd);
-		if ((pid = fork()) == 0)
+		if ((obj->pid = fork()) == 0)
 		{
 			obj->pars.line = ft_strdup(obj->pars.line_for_pipe[i]);
 			fn_pars_line(obj);
@@ -214,16 +208,17 @@ int		threatment_pipe(t_obj *obj)
 				dup2(obj->redirect.fd, 0);
 				close(fd[0]);
 				close(fd[1]);
-				wait(&pid);
+				wait(&obj->pid);
 			}
 			else
 			{
 				dup2(fd[0], 0);
 				close(fd[0]);
 				close(fd[1]);
-				wait(&pid);
+				wait(&obj->pid);
 			}
 		}
+		obj->pid = 0;
 		i++;
 	}
 	dup2(obj->standart_fd.fd_in, 0);
@@ -237,13 +232,11 @@ int     fn_process_for_pipes(t_obj *obj)
 {
 	int     i;
 	char    *leaks;
-	int     we_command;
 	char    *path;
 	int     j;
 	int     k;
 	int     len;
 	i = 0;
-	we_command = 0;
 	
 	if (obj->flag.exist_pipe == 1)
 		threatment_pipe(obj);
@@ -252,13 +245,12 @@ int     fn_process_for_pipes(t_obj *obj)
 		obj->flag.valid_com = fn_valid_command(obj);
 		if (obj->redirect.fd != 1)
 			dup2(obj->redirect.fd, 1);
-		if (obj->flag.valid_com == 0 && we_command == 0)
+		if (obj->flag.valid_com == 0)
 		{
 			if (obj->redirect.fd_back_redirect != 0)
 				dup2(obj->redirect.fd_back_redirect, 0);
 			int error = 0;
-			pid_t pid;
-			if ((pid = fork()) == 0)
+			if ((obj->pid = fork()) == 0)
 			{
 				char **argv;
 				j = 0;
@@ -309,7 +301,7 @@ int     fn_process_for_pipes(t_obj *obj)
 				exit(1);
 			}
 			else
-				wait(&pid);
+				wait(&obj->pid);
 			if (error == -1)
 			{
 				fn_command_not_found(obj);
@@ -318,6 +310,8 @@ int     fn_process_for_pipes(t_obj *obj)
 			if (obj->redirect.fd_back_redirect != 0)
 				dup2(obj->standart_fd.fd_out, 0);
 			obj->redirect.fd_back_redirect = 0;
+			obj->flag.valid_com = 1;
+			obj->pid = 0;
 		}
 		else if (obj->flag.valid_com != 0 && obj->flag.valid_redir == 1) //Выполняю НАШИ функции (echo)
 			fn_valid_arg(obj);

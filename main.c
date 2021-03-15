@@ -6,12 +6,13 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/14 13:03:19 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/15 16:31:32 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/15 19:39:11 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libminishell.h"
-#include <stdio.h>
+# include "libminishell.h"
+# include <stdio.h>
+t_obj	obj;
 
 int		fn_check_pipe(t_obj *obj)
 {
@@ -50,12 +51,6 @@ int		fn_check_pipe(t_obj *obj)
 		i++;
 	}
 	return (0);
-}
-
-void	fn_ctrl_c(int key)
-{
-	write(1, "\nminishell : ", 13);
-	return ;
 }
 
 int		fn_check_before_redirect(t_obj *obj)
@@ -115,22 +110,54 @@ int		fn_check_before_redirect(t_obj *obj)
 	return (1);
 }
 
+int		ft_putstr(char *line)
+{
+	int		i;
+
+	i = -1;
+	while (line[++i])
+		write(1, &line[i], 1);
+	return (i);
+}
+
+void	s_ctr_sl(int sig)
+{
+	char	*num;
+
+	if (obj.pid)
+	{
+		kill(obj.pid, sig);
+		ft_putstr("Quit: ");
+		num = ft_itoa(sig);
+		ft_putstr(num);
+		ft_putstr("\n");
+	}
+	else
+		ft_putstr("\b\b  \b\b");
+}
+
+void	s_ctr_c()
+{
+	ft_putstr("\b\b  \b\b");
+	write(1, "\nminishell : ", 13);
+}
+
 int		main(int argc, char **argv, char **envp)
 {
-	t_obj	obj;
 	int		i = 0;
 	int		j;
 	int		error;
+	int		wh;
 
 	obj.standart_fd.fd_in = dup(0);
 	obj.standart_fd.fd_out = dup(1);
 	write(1, "minishell : ", 12);
 	obj.pars.envp = envp;
 	add_list_env(&obj.env_list, &obj.export_list ,obj.pars.envp);
-	signal(2, fn_ctrl_c);
-	signal(3, fn_ctrl_sl);
 	error = 0;
-	while ((get_next_line(&obj.pars.line, 0)) > 0)
+	signal(SIGINT, s_ctr_c);
+	signal(3, s_ctr_sl);
+	while ((wh = get_next_line(&obj.pars.line, 0)) > 0)
 	{
 		j = 0;
 		obj.pars.split_string = ft_split(obj.pars.line, ';');
@@ -185,8 +212,8 @@ int		main(int argc, char **argv, char **envp)
 				j++;
 			}
 		}
-			write(1, "minishell : ", 12);
-			free(obj.pars.line);
+		write(1, "minishell : ", 12);
+		free(obj.pars.line);
 	}
 	write(1, "\n", 1);
 	return (0);

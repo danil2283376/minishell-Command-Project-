@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/14 13:09:25 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/10 16:58:44 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/15 19:20:28 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,7 @@ typedef struct		s_standart_out
 }					t_standart_out;
 typedef struct		s_obj
 {
+	pid_t			pid;
 	t_redirect		redirect;
 	t_flags			flag;
 	t_pars			pars;
