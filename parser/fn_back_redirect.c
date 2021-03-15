@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/02 08:48:50 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/06 14:48:02 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/15 15:44:47 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,16 +90,9 @@ int		fn_back_redirect(t_obj *obj)
 	}
 	if (obj->redirect.count_red == 1)
 	{
-		write(1, ">", 1); //ERRRORORORORORRORORORROOORROOOROROITORITORTIO
-		while (get_next_line(&arg, 0) > 0)
-		{
-			write(1, ">", 1);
-			if (!obj->pars.arg_for_back_redirect)
-				obj->pars.arg_for_back_redirect = ft_strdup(arg);
-			else
-				obj->pars.arg_for_back_redirect = ft_strjoin(obj->pars.arg_for_back_redirect, arg);
-			obj->pars.arg_for_back_redirect = ft_strjoin(obj->pars.arg_for_back_redirect, "\n");
-		}
+		// write(1, "minishell : multiple commands are prohibited by subject\n", 56);
+		obj->flag.multiple_com = 0;
+		return (-1);
 	}
 	obj->flag.beg = fn_space(obj->pars.line, i);
 	return (obj->flag.beg);

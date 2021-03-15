@@ -6,27 +6,50 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/14 13:03:19 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/14 19:47:50 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/15 15:43:44 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libminishell.h"
 #include <stdio.h>
 
-void	fn_check_pipe(t_obj *obj)
+int		fn_check_pipe(t_obj *obj)
 {
 	int		i;
+	int		start;
 
 	i = 0;
+	start = fn_space(obj->pars.line, i);
 	while (obj->pars.line[i])
 	{
-		if (obj->pars.line[i] == 124)
+		if (obj->pars.line[i] == '|')
 		{
+			if (i == start)
+			{
+				while (obj->pars.line[i] == '|')
+					i++;
+				if (i - start > 1)
+					write(1, "minishell: syntax error near unexpected token `||'\n", 51);
+				else
+					write(1, "minishell: syntax error near unexpected token `|'\n", 50);
+				return (-1);
+			}
+			i++;
+			if (obj->pars.line[i] == '|')
+			{
+				write(1, "minishell : multiple commands are prohibited by subject\n", 56);
+				return (-1);
+			}
+			if (obj->pars.line[fn_space(obj->pars.line, i)] == '\0')
+			{
+				write(1, "minishell : multiple commands are prohibited by subject\n", 56);
+				return (-1);
+			}
 			obj->flag.exist_pipe = 1;
-			return ;
 		}
 		i++;
 	}
+	return (0);
 }
 
 void	fn_ctrl_c(int key)
@@ -120,7 +143,8 @@ int		main(int argc, char **argv, char **envp)
 				obj.pars.line = ft_strdup(obj.pars.split_string[j]);
 				obj.flag.beg = 0;
 				obj.flag.exist_pipe = 0;
-				fn_check_pipe(&obj);
+				if ((fn_check_pipe(&obj)) == -1)
+					break ;
 				if (obj.flag.exist_pipe == 0)
 					fn_pars_line(&obj);
 				else

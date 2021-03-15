@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/15 19:21:43 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/06 10:32:40 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/15 14:27:27 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,6 @@ void	fn_pars_argument(t_obj *obj)
 		{
 			redir = obj->flag.beg;
 			obj->flag.beg = i;
-			// write(1, "1", 1);
 			if (obj->pars.line[i] == '>')
 				i = fn_redirect(obj);
 			else
@@ -74,7 +73,7 @@ void	fn_pars_argument(t_obj *obj)
 		}
 		if (obj->pars.line[i] == '\\')
 			i += 2;
-		else if (obj->pars.line[i] != '\0' && obj->pars.line[i] != '>')
+		else if (obj->pars.line[i] != '\0' && obj->pars.line[i] != '>' && obj->pars.line[i] != '<')
 			i++;
 		else if (obj->pars.line[i] == '\0' && redir == 0)
 		{

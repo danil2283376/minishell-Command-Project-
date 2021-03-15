@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/14 17:21:56 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/06 10:25:54 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/15 14:33:54 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void	fn_pars_command(t_obj *obj)
 		i = fn_space(obj->pars.line, i);
 	}
 	while (obj->pars.line[i] != ' ' && obj->pars.line[i] != ';'
-	&& obj->pars.line[i] && obj->pars.line[i] != '>')
+	&& obj->pars.line[i] && obj->pars.line[i] != '>' && obj->pars.line[i] != '<')
 	{
 		if (obj->pars.line[i] == '\"' || obj->pars.line[i] == '\'')
 		{

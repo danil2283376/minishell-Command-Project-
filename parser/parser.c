@@ -6,83 +6,11 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/14 10:52:41 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/13 16:01:25 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/15 15:41:01 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../libminishell.h"
-
-// int			threatment_command_for_path(t_obj *obj)
-// {
-// 	char	*path;
-// 	int		i;
-// 	int		k;
-// 	char	*new_str;
-// 	char	*save_arr;
-// 	int		error;
-// 	char 	**argv;
-// 	pid_t 	pid;
-
-// 	save_arr = ft_strjoin(obj->pars.command, " ");
-// 	save_arr = ft_strjoin(save_arr, obj->pars.argument);
-// 	pid = fork();
-// 	signal(3, fn_ctrl_sl);
-// 	if (pid == 0)
-// 	{
-// 		if (!(argv = ft_split(save_arr, ' ')))
-// 			fn_error("not memory allocate");
-// 		i = 0;
-// 		path = fn_search_enviroment(obj, "PATH");
-// 		error = -1;
-// 		while (error == -1 && path[i + 1])
-// 		{
-// 			k = i;
-// 			while (path[i] && path[i] != ':')
-// 				i++;
-// 			path[i] = '\0';
-// 			new_str = ft_strdup(&path[k]);
-// 			if (!(new_str = ft_strjoin(new_str, "/")))
-// 				fn_error("not memory allocate");
-// 			if (!(new_str = ft_strjoin(new_str, obj->pars.command)))
-// 				fn_error("not memory allocate");
-// 			error = execve(new_str, &argv[0], obj->pars.envp);
-// 			i++;
-// 		}
-// 		if (error == -1)
-// 			pid = 250;
-// 	}
-// 	else
-// 	{
-// 		wait(&pid);
-// 		if (pid == 0)
-// 			return (1);
-// 	}
-// 	return (0);
-// }
-
-// int			threatment_command(t_obj *obj)
-// {
-// 	char *new_str;
-// 	int error;
-// 	char **argv;
-// 	pid_t pid;
-
-// 	pid = fork();
-// 	signal(3, fn_ctrl_sl);
-// 	if (pid == 0)
-// 	{
-// 		if (!(argv = ft_split(obj->pars.line, ' ')))
-// 			fn_error("not memory allocate");
-// 		if (!(new_str = ft_strdup(obj->pars.command)))
-// 			fn_error("not memory allocate");
-// 		error = execve(new_str, &argv[0], obj->pars.envp);
-// 		if (error == -1)
-// 			return (0);
-// 	}
-// 	else
-// 		wait(&pid);
-// 	return (1);
-// }
 
 int		fn_error_processing(t_obj *obj)
 {
