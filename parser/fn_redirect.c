@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/22 10:42:40 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/13 16:05:32 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/15 12:40:04 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,6 @@ int		fn_redirect(t_obj *obj)
 	if (!(obj->pars.redirect = ft_substr(obj->pars.line, obj->flag.beg, i - obj->flag.beg)))
 		fn_error("not memory allocate");
 	obj->pars.redirect = fn_circumcision(obj->pars.redirect, obj);
-	printf("red = %s*\n", obj->pars.redirect);
 	obj->flag.beg = fn_space(obj->pars.line, i);
 	if (obj->redirect.count_red == 0)
 		obj->redirect.fd = open(obj->pars.redirect, O_TRUNC | O_CREAT | O_RDWR, 0666);

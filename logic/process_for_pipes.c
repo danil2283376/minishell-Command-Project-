@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/25 18:59:03 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/13 15:16:28 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/15 13:24:46 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,16 +27,16 @@ void	fn_ctrl_sl(int key)
 
 void	delete_space(t_obj *obj) 
 {
-	int i;
+int i;
 
-	i = 0;
-	while (obj->pars.line_for_pipe[i] != NULL)
-	{
-		char *leak = obj->pars.line_for_pipe[i];
-		obj->pars.line_for_pipe[i] = ft_strtrim(obj->pars.line_for_pipe[i], " ");
-		free(leak);
-		i++;
-	}
+i = 0;
+while (obj->pars.line_for_pipe[i] != NULL)
+{
+	char *leak = obj->pars.line_for_pipe[i];
+	obj->pars.line_for_pipe[i] = ft_strtrim(obj->pars.line_for_pipe[i], " ");
+	free(leak);
+	i++;
+}
 }
 
 // void	search_command_in_varible_path(t_obj *obj) 
@@ -58,7 +58,7 @@ char	*ft_my_strjoin(char const *s1, char const *s2)
 	char			*ptr;
 	unsigned int	start_ptr;
 	unsigned int	start_s;
-
+	
 	if (s1 == NULL || s2 == NULL)
 		return (NULL);
 	len_s1 = ft_strlen(s1);
@@ -80,7 +80,7 @@ char	*ft_my_strjoin(char const *s1, char const *s2)
 void	free_double_array(char **array) 
 {
 	int i;
-
+	
 	i = 0;
 	while (array[i]) 
 	{
@@ -100,11 +100,14 @@ void	search_command_varible_path(t_obj *obj, int o)
 	int error = -1;
 	int count = 0;
 	char *leaks;
-
 	i = 0;
 	j = 0;
 	k = 0;
 	char **argv;
+
+	obj->flag.exist_pipe = 0;
+	obj->pars.line_for_pipe[o] = fn_circumcision(obj->pars.line_for_pipe[o], obj);
+	obj->flag.exist_pipe = 1;
 	argv = ft_split(obj->pars.line_for_pipe[o], ' ');
 	obj->pars.command = ft_strdup(obj->pars.command_for_pipe[o]);
 	obj->flag.valid_com = fn_valid_command(obj);
@@ -161,7 +164,7 @@ int		threatment_pipe(t_obj *obj)
 	int i;
 	int error;
 	int last_command;
-
+	
 	i = 0;
 	error = 0;
 	last_command = 0;
@@ -172,33 +175,22 @@ int		threatment_pipe(t_obj *obj)
 			pipe(fd);
 		if ((pid = fork()) == 0)
 		{
-			// if (obj->redirect.fd != 1)
-			// {
-			// 	obj->flag.after_redir = 1;
-			// 	dup2(obj->redirect.fd, 1);
-			// 	close(fd[0]);
-			// 	close(fd[1]);
-			// 	// search_command_varible_path(obj, i);
-			// }
-			// else
-			// {
-			// 	if (obj->flag.after_redir != 1)
-			// 	{
-			// 		write(2, "1\n", 1);
-			// 		dup2(obj->redirect.fd, 1);
-			// 		close(fd[0]);
-			// 		close(fd[1]);
-			// 		obj->flag.after_redir = 0;
-			// 	}
-			// 	else
-			// 	{
-					// write(2, "2\n", 1);
-					dup2(fd[1], 1);
-					close(fd[0]);
-					close(fd[1]);
-					search_command_varible_path(obj, i);
-			// 	}
-			// }
+			obj->pars.line = ft_strdup(obj->pars.line_for_pipe[i]);
+				fn_pars_line(obj);
+			if (obj->redirect.fd != 1)
+			{
+				obj->flag.after_redir = 1;
+				dup2(obj->redirect.fd, 1);
+				close(fd[0]);
+				close(fd[1]);
+			}
+			else
+			{
+				dup2(fd[1], 1);
+				close(fd[0]);
+				close(fd[1]);
+				search_command_varible_path(obj, i);
+			}
 			exit(1);
 		}
 		else
@@ -206,26 +198,28 @@ int		threatment_pipe(t_obj *obj)
 			obj->flag.beg = 0;
 			obj->pars.line = ft_strdup(obj->pars.line_for_pipe[i]);
 			fn_pars_line(obj);
-			// if (obj->redirect.fd != 1)
-			// {
-			// 	write(2, "HELL\n", 5);
-			// 	obj->flag.beg = 0;
-			// 	obj->pars.line = ft_strdup(obj->pars.line_for_pipe[i]);
-			// 	obj->flag.exist_pipe = 0;
-			// 	fn_pars_line(obj);
-			// 	obj->flag.exist_pipe = 1;
-			// 	dup2(obj->redirect.fd, 0);
-			// 	close(fd[0]);
-			// 	close(fd[1]);
-			// 	wait(&pid);
-			// }
-			// else
-			// {
+			if (obj->redirect.fd != 1)
+			{
+				write(2, "HELL\n", 5);
+				obj->flag.beg = 0;
+				obj->pars.line = ft_strdup(obj->pars.line_for_pipe[i]);
+				obj->flag.exist_pipe = 0;
+				fn_pars_line(obj);
+				obj->pars.line = fn_circumcision(obj->pars.line, obj);
+				obj->pars.line_for_pipe[i] = ft_strdup(obj->pars.line);
+				obj->flag.exist_pipe = 1;
+				dup2(obj->redirect.fd, 0);
+				close(fd[0]);
+				close(fd[1]);
+				wait(&pid);
+			}
+			else
+			{
 				dup2(fd[0], 0);
 				close(fd[0]);
 				close(fd[1]);
 				wait(&pid);
-			// }
+			}
 		}
 		i++;
 	}
@@ -233,118 +227,77 @@ int		threatment_pipe(t_obj *obj)
 	return (1);
 }
 
-int	threatment_solo_command(t_obj *obj, int o) 
-{
-	int i;
-	int j;
-	int k;
-	char *varible_path;
-	char *new_path;
-	int error;
-	char **argv;
-
-	i = 0;
-	error = 0;
-	varible_path = fn_search_enviroment(obj, "PATH");
-	printf("SOSAT!\n");
-	write (2, obj->pars.line_for_pipe[o], ft_strlen(obj->pars.line_for_pipe[o]));
-	argv = ft_split(obj->pars.line_for_pipe[o], ' ');
-	write(1, "1", 1);
-	printf("%s\n", varible_path);
-	while (varible_path[i] != '\0')
-	{
-		while (varible_path[j] != ':')
-			j++;
-		new_path = malloc(j + 1);
-		while (varible_path[i] != ':' && varible_path[i] != '\0')
-		{
-			new_path[k] = varible_path[i++];
-			k++;
-		}
-		new_path[k] = '\0';
-		new_path = ft_my_strjoin(new_path, "/");
-		new_path = ft_my_strjoin(new_path, obj->pars.command_for_pipe[o]);
-		// argv = ft_split(obj->pars.line_for_pipe[o], ' ');
-		// obj->pars.line = ft_strdup(obj->pars.line_for_pipe[o]);
-		printf("%s\n", new_path);
-		error = execve(new_path, &argv[0], obj->pars.envp);
-		if (varible_path[i] == ':')
-			i++;
-		j = 0;
-		k = 0;
-		free(new_path);
-	}
-	return (error);
-}
-
 int     fn_process_for_pipes(t_obj *obj)
 {
-    int     i;
-    char    *leaks;
-    int     we_command;
-    char    *path;
-    int     j;
-    int     k;
-    int     len;
-    i = 0;
-    we_command = 0;
-    if (obj->flag.exist_pipe == 1)
-    {
-        threatment_pipe(obj);
-    }
-    else
-    {
-        obj->flag.valid_com = fn_valid_command(obj);
-        if (obj->flag.valid_com == 0 && we_command == 0)
-        {
-            int error = 0;
-            pid_t pid;
-            if ((pid = fork()) == 0)
-            {
-                char **argv;
-                j = 0;
-                path = fn_search_enviroment(obj, "PATH");
-                len = ft_strlen(path);
-                argv = ft_split(obj->pars.line, ' ');
-                while (path[j])
-                {
-                    k = j;
-                    if (j == -1)
-                        j++;
-                    while (path[j] != ':' && path[j])
-                        j++;
-                    if (path[j] == ':')
-                    {
-                        path[j] = '\0';
-                        j++;
-                    }
-                    else
-                        break ;
-                    char *new_str;
-                    new_str = ft_strjoin(&path[k], "/");
-                    new_str = ft_strjoin(new_str, obj->pars.command);
-                    error = execve(new_str, &argv[0], obj->pars.envp);
-                    if (error != -1)
-                        break ;
-                }
-                if (error == -1)
-                {
-                    error = execve(obj->pars.command, &argv[0], obj->pars.envp);
-                    if (error == -1)
-                        fn_command_not_found(obj);
-                }
-                exit(1);
-            }
-            else
-                wait(&pid);
-            if (error == -1)
-            {
-                fn_command_not_found(obj);
-                return (0);
-            }
-        }
-        else if (obj->flag.valid_com != 0 && obj->flag.valid_redir == 1) //Выполняю НАШИ функции (echo)
-            fn_valid_arg(obj);
-    }
-    return (1);
+	int     i;
+	char    *leaks;
+	int     we_command;
+	char    *path;
+	int     j;
+	int     k;
+	int     len;
+	i = 0;
+	we_command = 0;
+	
+	if (obj->flag.exist_pipe == 1)
+		threatment_pipe(obj);
+	else
+	{
+		obj->flag.valid_com = fn_valid_command(obj);
+		if (obj->redirect.fd != 1)
+			dup2(obj->redirect.fd, 1);
+		if (obj->flag.valid_com == 0 && we_command == 0)
+		{
+			int error = 0;
+			pid_t pid;
+		if ((pid = fork()) == 0)
+		{
+			char **argv;
+			j = 0;
+			path = fn_search_enviroment(obj, "PATH");
+			len = ft_strlen(path);
+			obj->pars.line = fn_circumcision(obj->pars.line, obj);
+			argv = ft_split(obj->pars.line, ' ');
+			while (path[j])
+			{
+				k = j;
+				if (j == -1)
+					j++;
+				while (path[j] != ':' && path[j])
+					j++;
+				if (path[j] == ':')
+				{
+					path[j] = '\0';
+					j++;
+				}
+				else
+					break ;
+				char *new_str;
+				new_str = ft_strjoin(&path[k], "/");
+				new_str = ft_strjoin(new_str, obj->pars.command);
+				error = execve(new_str, &argv[0], obj->pars.envp);
+				if (error != -1)
+					break ;
+			}
+			if (error == -1)
+			{
+				error = execve(obj->pars.command, &argv[0], obj->pars.envp);
+				if (error == -1)
+					fn_command_not_found(obj);
+			}
+			exit(1);
+		}
+			else
+				wait(&pid);
+			if (error == -1)
+			{
+				fn_command_not_found(obj);
+				return (0);
+			}
+		}
+		else if (obj->flag.valid_com != 0 && obj->flag.valid_redir == 1) //Выполняю НАШИ функции (echo)
+			fn_valid_arg(obj);
+	}
+	dup2(obj->standart_fd.fd_out, 1);
+	return (1);
 }

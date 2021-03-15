@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/22 15:13:19 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/03 14:09:16 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/15 12:28:29 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@ char	*fn_circumcision_fill(char *line, int len, t_obj *obj)
 	i = -1;
 	if (!(com = (char *)malloc(sizeof(char) * (len + 1))))
 		fn_error("not memory allocate");
-	com[len] = '\0';
 	len = 0;
 	while (line[++i])
 	{
@@ -62,6 +61,7 @@ char	*fn_circumcision_fill(char *line, int len, t_obj *obj)
 		else
 			com[len++] = line[i];
 	}
+	com[len] = '\0';
 	free(line);
 	return (com);
 }
