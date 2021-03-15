@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/22 10:42:40 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/15 12:40:04 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/15 17:02:30 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,10 @@ int		fn_redirect(t_obj *obj)
 	if (obj->redirect.count_red == 0)
 		obj->redirect.fd = open(obj->pars.redirect, O_TRUNC | O_CREAT | O_RDWR, 0666);
 	else if (obj->redirect.count_red == 1)
+	{
 		obj->redirect.fd = open(obj->pars.redirect, O_RDWR | O_APPEND, 0666);
+		if (obj->redirect.fd == -1)
+			obj->redirect.fd = open(obj->pars.redirect, O_CREAT | O_RDWR, 0666);
+	}
 	return (obj->flag.beg);
 }

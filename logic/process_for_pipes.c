@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/25 18:59:03 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/15 15:31:34 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/15 16:59:13 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,32 +24,6 @@ void	fn_ctrl_sl(int key)
 *	char			**command_for_pipe; // комманды в двумерном массиве
 *	char			**argument_for_pipe; // аргументы комманд в двумерном массиве
 */
-
-void	delete_space(t_obj *obj) 
-{
-int i;
-
-i = 0;
-while (obj->pars.line_for_pipe[i] != NULL)
-{
-	char *leak = obj->pars.line_for_pipe[i];
-	obj->pars.line_for_pipe[i] = ft_strtrim(obj->pars.line_for_pipe[i], " ");
-	free(leak);
-	i++;
-}
-}
-
-// void	search_command_in_varible_path(t_obj *obj) 
-// {
-// 	int i;
-
-// 	i = 0;
-// 	char *command;
-// 	while (obj->) 
-// 	{
-
-// 	}
-// }
 
 char	*ft_my_strjoin(char const *s1, char const *s2)
 {
@@ -111,11 +85,11 @@ void	search_command_varible_path(t_obj *obj, int o)
 	argv = ft_split(obj->pars.line_for_pipe[o], ' ');
 	obj->pars.command = ft_strdup(obj->pars.command_for_pipe[o]);
 	obj->flag.valid_com = fn_valid_command(obj);
-	obj->pars.line = ft_strdup(obj->pars.command_for_pipe[o]);
-	obj->flag.beg = 0;
-	fn_pars_line(obj);
-	if (obj->flag.valid_com == 0)
+	if (obj->flag.valid_com == 0 && obj->flag.after_redir != 1)
 	{
+		obj->pars.line = ft_strdup(obj->pars.command_for_pipe[o]);
+		obj->flag.beg = 0;
+		fn_pars_line(obj);
 		if (obj->redirect.fd_back_redirect != 0)
 			dup2(obj->redirect.fd_back_redirect, 0);
 		varible_path = fn_search_enviroment(obj, "PATH");
@@ -154,13 +128,32 @@ void	search_command_varible_path(t_obj *obj, int o)
 			}
 		}
 		free_double_array(argv);
+		obj->redirect.fd_back_redirect = 0;
 	}
 	else if (obj->flag.valid_com != 0 && obj->flag.valid_redir == 1) //Выполняю НАШИ функции (echo)
 	{
+		// write(2, "qwe", 3);
 		obj->pars.argument = ft_strdup(obj->pars.argument_for_pipe[o]);
 		fn_valid_arg(obj);
 	}
-	obj->redirect.fd_back_redirect = 0;
+}
+
+int		fn_check_red(t_obj *obj, int i)
+{
+	int		j;
+
+	j = 0;
+	if (i != 0)
+	{
+		i--;
+		while (obj->pars.line_for_pipe[i][j])
+		{
+			if (obj->pars.line_for_pipe[i][j] == '>')
+				return (-1);
+			j++;
+		}
+	}
+	return (1);
 }
 
 int		threatment_pipe(t_obj *obj)
@@ -174,7 +167,6 @@ int		threatment_pipe(t_obj *obj)
 	i = 0;
 	error = 0;
 	last_command = 0;
-	delete_space(obj);
 	while (i < obj->flag.p_flag.count_pipe)
 	{
 		if (i < obj->flag.p_flag.count_pipe - 1)
@@ -182,14 +174,10 @@ int		threatment_pipe(t_obj *obj)
 		if ((pid = fork()) == 0)
 		{
 			obj->pars.line = ft_strdup(obj->pars.line_for_pipe[i]);
-				fn_pars_line(obj);
-			if (obj->redirect.fd != 1 /*|| obj->redirect.fd_back_redirect != 0*/)
+			fn_pars_line(obj);
+			if (obj->redirect.fd != 1)
 			{
-				// if (obj->redirect.fd_back_redirect != 0)
-				// 	dup2(obj->redirect.fd_back_redirect, 0);
-				// else
-					dup2(obj->redirect.fd, 1);
-				obj->flag.after_redir = 1;
+				dup2(obj->redirect.fd, 1);
 				close(fd[0]);
 				close(fd[1]);
 			}
@@ -198,7 +186,8 @@ int		threatment_pipe(t_obj *obj)
 				dup2(fd[1], 1);
 				close(fd[0]);
 				close(fd[1]);
-				search_command_varible_path(obj, i);
+				if (obj->flag.after_redir != 1)
+					search_command_varible_path(obj, i);
 			}
 			exit(1);
 		}
@@ -207,28 +196,22 @@ int		threatment_pipe(t_obj *obj)
 			obj->flag.beg = 0;
 			obj->pars.line = ft_strdup(obj->pars.line_for_pipe[i]);
 			fn_pars_line(obj);
-			if (obj->redirect.fd != 1 /*|| obj->redirect.fd_back_redirect != 0*/)
+			obj->flag.after_redir = 0;
+			if (obj->redirect.fd != 1)
 			{
-				write(2, "HELL\n", 5);
 				obj->flag.beg = 0;
+				obj->flag.after_redir = 1;
 				obj->pars.line = ft_strdup(obj->pars.line_for_pipe[i]);
 				obj->flag.exist_pipe = 0;
 				fn_pars_line(obj);
 				obj->pars.line = fn_circumcision(obj->pars.line, obj);
 				obj->pars.line_for_pipe[i] = ft_strdup(obj->pars.line);
 				obj->flag.exist_pipe = 1;
-				// if (obj->redirect.fd_back_redirect != 0)
-				// 	dup2(obj->redirect.fd_back_redirect, 1);
-				// else
 				dup2(obj->redirect.fd, 0);
 				close(fd[0]);
 				close(fd[1]);
 				wait(&pid);
 			}
-			// else if (obj->redirect.fd_back_redirect != 0)
-			// {
-			// 	dup2(obj->redirect.fd_back_redirect, 0);
-			// }
 			else
 			{
 				dup2(fd[0], 0);
@@ -240,6 +223,9 @@ int		threatment_pipe(t_obj *obj)
 		i++;
 	}
 	dup2(obj->standart_fd.fd_in, 0);
+	dup2(obj->standart_fd.fd_out, 1);
+	obj->redirect.fd_back_redirect = 0;
+	obj->redirect.fd = 1;
 	return (1);
 }
 
@@ -322,6 +308,8 @@ int     fn_process_for_pipes(t_obj *obj)
 		else if (obj->flag.valid_com != 0 && obj->flag.valid_redir == 1) //Выполняю НАШИ функции (echo)
 			fn_valid_arg(obj);
 	}
+	dup2(obj->standart_fd.fd_in, 0);
 	dup2(obj->standart_fd.fd_out, 1);
+	obj->redirect.fd = 1;
 	return (1);
 }

@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/14 13:03:19 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/15 15:43:44 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/15 16:31:32 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,6 +155,7 @@ int		main(int argc, char **argv, char **envp)
 						fn_error("not memory allocate\n");
 					while (obj.pars.line_for_pipe[i] != NULL)
 					{
+						obj.pars.line_for_pipe[i] = ft_strtrim(obj.pars.line_for_pipe[i], " ");
 						i++;
 					}
 					obj.flag.p_flag.count_pipe = i; //КОЛИЧЕСТВО ПАЙПОВ БЛЯТЬ
