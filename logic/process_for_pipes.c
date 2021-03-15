@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/25 18:59:03 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/15 16:59:13 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/15 17:27:35 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,28 +93,33 @@ void	search_command_varible_path(t_obj *obj, int o)
 		if (obj->redirect.fd_back_redirect != 0)
 			dup2(obj->redirect.fd_back_redirect, 0);
 		varible_path = fn_search_enviroment(obj, "PATH");
-		while (varible_path[i] != '\0')
+		if (varible_path != NULL)
 		{
-			while (varible_path[j] != ':')
-				j++;
-			new_path = malloc(j + 1);
-			while (varible_path[i] != ':' && varible_path[i] != '\0')
+			while (varible_path[i] != '\0')
 			{
-				new_path[k] = varible_path[i++];
-				k++;
+				while (varible_path[j] != ':')
+					j++;
+				new_path = malloc(j + 1);
+				while (varible_path[i] != ':' && varible_path[i] != '\0')
+				{
+					new_path[k] = varible_path[i++];
+					k++;
+				}
+				new_path[k] = '\0';
+				new_path = ft_my_strjoin(new_path, "/");
+				new_path = ft_my_strjoin(new_path, obj->pars.command_for_pipe[o]);
+				error = execve(new_path, &argv[0], obj->pars.envp);
+				if (varible_path[i] == ':')
+				{
+					i++;
+					count++;
+				}
+				j = 0;
+				k = 0;
 			}
-			new_path[k] = '\0';
-			new_path = ft_my_strjoin(new_path, "/");
-			new_path = ft_my_strjoin(new_path, obj->pars.command_for_pipe[o]);
-			error = execve(new_path, &argv[0], obj->pars.envp);
-			if (varible_path[i] == ':')
-			{
-				i++;
-				count++;
-			}
-			j = 0;
-			k = 0;
 		}
+		else
+			error = -1;
 		if (error == -1)
 		{
 			error = execve(obj->pars.command_for_pipe[o], &argv[0], obj->pars.envp);
@@ -132,7 +137,6 @@ void	search_command_varible_path(t_obj *obj, int o)
 	}
 	else if (obj->flag.valid_com != 0 && obj->flag.valid_redir == 1) //Выполняю НАШИ функции (echo)
 	{
-		// write(2, "qwe", 3);
 		obj->pars.argument = ft_strdup(obj->pars.argument_for_pipe[o]);
 		fn_valid_arg(obj);
 	}
@@ -259,35 +263,45 @@ int     fn_process_for_pipes(t_obj *obj)
 				char **argv;
 				j = 0;
 				path = fn_search_enviroment(obj, "PATH");
-				len = ft_strlen(path);
-				if (obj->redirect.fd_back_redirect != 0)
-					obj->flag.exist_pipe = 0;
-				obj->pars.line = fn_circumcision(obj->pars.line, obj);
-				obj->flag.exist_pipe = 1;
-				argv = ft_split(obj->pars.line, ' ');
-				while (path[j])
+				if (path != NULL)
 				{
-					k = j;
-					if (j == -1)
-						j++;
-					while (path[j] != ':' && path[j])
-						j++;
-					if (path[j] == ':')
+					len = ft_strlen(path);
+					if (obj->redirect.fd_back_redirect != 0)
+						obj->flag.exist_pipe = 0;
+					obj->pars.line = fn_circumcision(obj->pars.line, obj);
+					obj->flag.exist_pipe = 1;
+					argv = ft_split(obj->pars.line, ' ');
+					while (path[j])
 					{
-						path[j] = '\0';
-						j++;
+						k = j;
+						if (j == -1)
+							j++;
+						while (path[j] != ':' && path[j])
+							j++;
+						if (path[j] == ':')
+						{
+							path[j] = '\0';
+							j++;
+						}
+						else
+							break ;
+						char *new_str;
+						new_str = ft_strjoin(&path[k], "/");
+						new_str = ft_strjoin(new_str, obj->pars.command);
+						error = execve(new_str, &argv[0], obj->pars.envp);
+						if (error != -1)
+							break ;
 					}
-					else
-						break ;
-					char *new_str;
-					new_str = ft_strjoin(&path[k], "/");
-					new_str = ft_strjoin(new_str, obj->pars.command);
-					error = execve(new_str, &argv[0], obj->pars.envp);
-					if (error != -1)
-						break ;
+					if (error == -1)
+					{
+						error = execve(obj->pars.command, &argv[0], obj->pars.envp);
+						if (error == -1)
+							fn_command_not_found(obj);
+					}
 				}
-				if (error == -1)
+				else
 				{
+					argv = ft_split(obj->pars.line, ' ');
 					error = execve(obj->pars.command, &argv[0], obj->pars.envp);
 					if (error == -1)
 						fn_command_not_found(obj);
