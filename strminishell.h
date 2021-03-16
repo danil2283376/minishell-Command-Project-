@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/14 13:09:25 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/15 19:20:28 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/15 20:37:29 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,11 @@ typedef struct		s_standart_out
 	int fd_out;
 	int	fd_pipe[2];
 }					t_standart_out;
+// typedef	struct	s_gnl
+// {
+// 	int		count;
+// }				t_gnl;
+
 typedef struct		s_obj
 {
 	pid_t			pid;

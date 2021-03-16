@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/14 13:03:19 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/15 19:39:11 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/15 20:57:04 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,9 +157,13 @@ int		main(int argc, char **argv, char **envp)
 	error = 0;
 	signal(SIGINT, s_ctr_c);
 	signal(3, s_ctr_sl);
-	while ((wh = get_next_line(&obj.pars.line, 0)) > 0)
+	while (1)
 	{
 		j = 0;
+		obj.pars.line = NULL;
+		wh = get_next_line(&obj.pars.line, 0);
+		if (wh < 0)
+			exit(0);
 		obj.pars.split_string = ft_split(obj.pars.line, ';');
 		obj.flag.after_redir = 0;
 		if (fn_check_before_redirect(&obj) != 0)
@@ -167,7 +171,7 @@ int		main(int argc, char **argv, char **envp)
 			while (obj.pars.split_string[j] != NULL)
 			{
 				obj.flag.valid_com = 1;
-				obj.pars.line = ft_strdup(obj.pars.split_string[j]);
+				ft_strdup(obj.pars.split_string[j]);
 				obj.flag.beg = 0;
 				obj.flag.exist_pipe = 0;
 				if ((fn_check_pipe(&obj)) == -1)

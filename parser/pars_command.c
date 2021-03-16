@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/14 17:21:56 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/15 14:33:54 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/15 20:56:03 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@ void	fn_pars_command(t_obj *obj)
 	int		redir;
 	int		save;
 
+	// if (obj->pars.line)
+	// 	obj->flag.valid_com = 0;
 	i = obj->flag.beg;
 	obj->flag.quote = '\0';
 	obj->redirect.fd = 1;
