@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/22 15:13:19 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/15 14:23:35 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/16 13:44:37 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,6 @@ char	*fn_circumcision_fill(char *line, int len, t_obj *obj)
 		else
 			com[len++] = line[i];
 	}
-	free(line);
 	return (com);
 }
 

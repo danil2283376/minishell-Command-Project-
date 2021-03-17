@@ -8,13 +8,14 @@ void			add_list_env(t_list *env_list, t_list *export_list, char **envp)
 	char *value;
 	char *name;
 	t_list	*copy;
+	char *leaks;
 
 	i = 0;
 	j = 0;
 	while (envp[i])
 	{
-		ft_lstadd_back(&env_list, ft_lstnew(envp[i]));
-		ft_lstadd_back(&export_list, ft_lstnew(envp[i]));
+		ft_lstadd_back(&env_list, ft_lstnew(ft_strdup(envp[i])));
+		ft_lstadd_back(&export_list, ft_lstnew(ft_strdup(envp[i])));
 		i++;
 	}
 	copy = env_list->next;
@@ -35,27 +36,35 @@ void			add_list_env(t_list *env_list, t_list *export_list, char **envp)
 	}
 	if (value != NULL)
 	{
+		leaks = value;
 		value = (ft_itoa(ft_atoi(value) + 1));
-		export_varible_in_env(env_list, name, value);
-		export_varible_in_env(export_list, name, value);
+		free(leaks);
+		export_varible_in_env(env_list, "SHLVL", value);
+		export_varible_in_env(export_list, "SHLVL", value);
+		free(value);
 	}
 	else
 	{
-		export_varible_in_env(env_list, name, "1");
-		export_varible_in_env(export_list, name, "1");
+		export_varible_in_env(env_list, "SHLVL", "1");
+		export_varible_in_env(export_list, "SHLVL", "1");
 	}
+	free(name);
 }
 
-void			output_list(t_list *list)
+void            output_list(t_list *list)
 {
-	t_list *copy;
+    t_list *copy;
+    char *string;
+    copy = list;
+    string = NULL;
 
-	copy = list;
-	while (copy->next != NULL)
-	{
-		copy = copy->next;
-		printf("%s\n", copy->content);/*!PRINTF*/
-	}
+    while (copy->next != NULL)
+    {
+        copy = copy->next;
+        string = (char *)(copy->content);
+        write(1, string, ft_strlen(string));
+        write(1, "\n", 1);
+    }
 }
 
 int				exist_value_env(t_list *list, char *value)
@@ -63,7 +72,6 @@ int				exist_value_env(t_list *list, char *value)
 	t_list *copy;
 	int i;
 	char *str;
- 
 	int len_value;
 
 	copy = list;
@@ -73,7 +81,6 @@ int				exist_value_env(t_list *list, char *value)
 	{
 		copy = copy->next;
 		str = (char *)copy->content;
-		// printf("STR = %s\n", str);
 		while (str[i] != '=' && str[i] && value[i])
 		{
 			if (str[i] == value[i])
@@ -101,6 +108,8 @@ void			export_varible_in_env(t_list *env_list,
 	t_list *copy_before;
 	t_list *new_list;
 	t_list *copy_after;
+	char *leaks;
+	t_list *current;
 
 	boolean = exist_value_env(env_list, name_varible);
 	len_value = ft_strlen(name_varible);
@@ -108,6 +117,7 @@ void			export_varible_in_env(t_list *env_list,
 	i = 0;
 	j = 0;
 	k = 0;
+	char *new_line;
 	if (boolean)
 	{
 		while (copy->next != NULL)
@@ -122,7 +132,10 @@ void			export_varible_in_env(t_list *env_list,
 					break ;
 			}
 			if (len_value == i)
+			{
+				current = copy;
 				break ;
+			}
 			j++;
 		}
 		copy_before = env_list->next;
@@ -132,26 +145,32 @@ void			export_varible_in_env(t_list *env_list,
 			copy_before = copy_before->next;
 			k++;
 		}
+		free(current->content);
 		free(copy);
-		char *new_line;
-		new_line = ft_strjoin(name_varible, "="); // MALLOC
+		new_line = ft_strjoin(name_varible, "=");
+		leaks = new_line;
 		new_line = ft_strjoin(new_line, value_varible); // MALLOC
+		free(leaks);
 		copy_before->next = ft_lstnew(new_line);
 		copy_before->next->next = copy_after;
 	}
-	else // добавляем переменную и значение
+	else
 	{
-		char *new_line;
+		char *leaks1;
 		if (value_varible[0] == '\0')
 		{
-			new_line = ft_strdup(name_varible); //MALLOC
+			new_line = ft_strdup(name_varible);
 			ft_lstadd_back(&env_list, ft_lstnew(new_line));
 		}
 		else
 		{
-			new_line = ft_strjoin(name_varible, "="); //MALLOC
+			new_line = ft_strjoin(name_varible, "=");
 			if (*value_varible != '\n')
-				new_line = ft_strjoin(new_line, value_varible); // MALLOC
+			{
+				leaks = new_line;
+				new_line = ft_strjoin(new_line, value_varible);
+				free(leaks);
+			}
 			ft_lstadd_back(&env_list, ft_lstnew(new_line));
 		}
 	}
@@ -167,7 +186,7 @@ void			unset(t_list *env_list, char *name_varible)
 	int k;
 	char *str;
 	int len_str;
-	int boolean; // существует аргумент или нет
+	int boolean;
 
 	copy = env_list;
 	i = 0;
@@ -195,9 +214,10 @@ void			unset(t_list *env_list, char *name_varible)
 			before = before->next;
 			k++;
 		}
-		free(copy);
 		if (before->next != NULL)
 			before->next = after;
+		free(copy->content);
+		free(copy);
 	}
 }
 

@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/21 15:04:56 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/15 16:08:17 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/17 13:14:33 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,12 @@ static	void	fn_check_flags(t_obj *obj)
 	new_arg = NULL;
 	while (obj->pars.argument[i])
 	{
-		if (obj->pars.argument[i] == '-' && obj->pars.argument[i + 1] == 'n'
+		if ((i == 0 || obj->pars.argument[i - 1] == ' ') && obj->pars.argument[i] == '-' && obj->pars.argument[i + 1] == 'n'
 		&& (obj->pars.argument[i + 2] == ' ' || obj->pars.argument[i + 2] == '\0'))
-			i+= 2;
+		{
+			i += 2;
+			i = fn_space(obj->pars.argument, i);
+		}
 		else
 		{
 			i++;
@@ -40,11 +43,11 @@ static	void	fn_check_flags(t_obj *obj)
 	len = 0;
 	while (obj->pars.argument[i])
 	{
-		if (obj->pars.argument[i] == '-' && obj->pars.argument[i + 1] == 'n'
+		if ((i == 0 || obj->pars.argument[i - 1] == ' ') && obj->pars.argument[i] == '-' && obj->pars.argument[i + 1] == 'n'
 		&& (obj->pars.argument[i + 2] == ' ' || obj->pars.argument[i + 2] == '\0'))
 		{
 			obj->flag.c_flag.fl_ec = 1;
-			i+= 2;
+			i += 2;
 			i = fn_space(obj->pars.argument, i);
 		}
 		else
@@ -55,6 +58,7 @@ static	void	fn_check_flags(t_obj *obj)
 		}
 	}
 	new_arg[len] = '\0';
+	free(obj->pars.argument);
 	obj->pars.argument = new_arg;
 }
 

@@ -1,43 +1,40 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   ft_atoi.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/02/14 09:23:48 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/17 11:38:32 by melisha          ###   ########.fr       */
+/*   Created: 2021/03/17 11:26:07 by melisha           #+#    #+#             */
+/*   Updated: 2021/03/17 11:26:26 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libminishell.h"
 
-int		get_next_line(char **line, int fd)
+int		ft_atoi(const char *str)
 {
 	int		i;
-	char	*buf;
-	int		j;
+	int		sum;
+	int		val;
 
 	i = 0;
-	if (!(buf = (char *)malloc(sizeof(char) * 10000)))
-		return (-1);
-	while ((j = read(fd, &buf[i], 1)) >= 0 && buf[i] != '\n')
+	sum = 0;
+	val = 1;
+	while (str[i] && (str[i] == ' ' || str[i] == '\n' || str[i] == '\t' ||
+				str[i] == '\f' || str[i] == '\v' || str[i] == '\r' ||
+				str[i] == '0'))
+		i++;
+	if (str[i] == '-' || str[i] == '+')
 	{
-		if (j == 0)
-		{
-			write(1, "  \b\b", 4);
-			if (i == 0)
-			{
-				write(1, "exit\n", 5);
-				exit(errno);
-			}
-			i--;
-		}
+		if (str[i] == '-')
+			val = -1;
 		i++;
 	}
-	buf[i] =  ' ';
-	buf[i + 1] = ' ';
-	buf[i + 2] = '\0';
-	*line = buf;
-	return (j);
+	while (str[i] >= '0' && str[i] <= '9')
+	{
+		sum = sum * 10 + (str[i] - '0');
+		i++;
+	}
+	return (sum * val);
 }

@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/14 13:08:24 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/15 19:35:40 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/17 14:29:16 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,8 @@
 # include <sys/errno.h>
 # include <stdlib.h>
 # include <signal.h>
+# include <stdio.h>
 # include <fcntl.h>
-# include "libasm/libasm.h"
 # include "strminishell.h"
 # include "parser/fn_validation_for_argument/validator.h"
 
@@ -33,7 +33,7 @@ void	ft_lstiter(t_list *lst, void (*f)(void *));
 t_list	*ft_lstmap(t_list *lst,
 		void *(*f)(void *), void (*del)(void *));
 int		ft_strncmp(const char *s1, const char *s2, size_t n);
-char	*ft_pwd();
+void	ft_pwd();
 void	unset(t_list *env_list, char *name_varible);
 void	add_list_env(t_list *env_list, t_list *export_list, char **envp);
 void	output_list(t_list *list);
@@ -47,6 +47,9 @@ char	**ft_split(char const *s, char c);
 int		fn_space(char *line, int i);
 int		fn_pars_line(t_obj *obj);
 void	fn_pars_command(t_obj *obj);
+int		ft_atoi(const char *str);
+char	*ft_strdup(const char *s1);
+size_t	ft_strlen(const char *str);
 void	*ft_bzero(void *s, size_t n);
 void	*ft_calloc(size_t nmemb, size_t size);
 char	*ft_strjoin(char const *s1, char const *s2);
@@ -71,6 +74,10 @@ int		fn_back_redirect(t_obj *obj);
 char	*ft_itoa(int n);
 void	s_ctr_c();
 void	s_ctr_sl(int sig);
+int		fn_space(char *line, int i);
 char	*fn_search_enviroment(t_obj *obj, char *name);
 int		ft_strcmp(char *s1, char *s2);
+char	*fn_circ_for_red(char *line, t_obj *obj);
+char	**ft_split_argv(char const *s, char c);
+void    free_double_array(char **array);
 #endif

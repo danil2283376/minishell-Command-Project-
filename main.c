@@ -6,12 +6,11 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/14 13:03:19 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/15 20:57:04 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/17 17:55:09 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "libminishell.h"
-# include <stdio.h>
 t_obj	obj;
 
 int		fn_check_pipe(t_obj *obj)
@@ -30,20 +29,20 @@ int		fn_check_pipe(t_obj *obj)
 				while (obj->pars.line[i] == '|')
 					i++;
 				if (i - start > 1)
-					write(1, "minishell: syntax error near unexpected token `||'\n", 51);
+					write(2, "minishell: syntax error near unexpected token `||'\n", 51);
 				else
-					write(1, "minishell: syntax error near unexpected token `|'\n", 50);
+					write(2, "minishell: syntax error near unexpected token `|'\n", 50);
 				return (-1);
 			}
 			i++;
 			if (obj->pars.line[i] == '|')
 			{
-				write(1, "minishell : multiple commands are prohibited by subject\n", 56);
+				write(2, "minishell : multiple commands are prohibited by subject\n", 56);
 				return (-1);
 			}
 			if (obj->pars.line[fn_space(obj->pars.line, i)] == '\0')
 			{
-				write(1, "minishell : multiple commands are prohibited by subject\n", 56);
+				write(2, "minishell : multiple commands are prohibited by subject\n", 56);
 				return (-1);
 			}
 			obj->flag.exist_pipe = 1;
@@ -88,9 +87,9 @@ int		fn_check_before_redirect(t_obj *obj)
 				while (obj->pars.line[i++] == ';')
 					j++;
 				if (j > 1)
-					write(1, "minishell: syntax error near unexpected token ';;'\n", 51);
+					write(2, "minishell: syntax error near unexpected token ';;'\n", 51);
 				else
-					write(1, "minishell: syntax error near unexpected token ';'\n", 50);
+					write(2, "minishell: syntax error near unexpected token ';'\n", 50);
 				obj->flag.without_mistake = 1;
 				return (0);
 			}
@@ -99,9 +98,9 @@ int		fn_check_before_redirect(t_obj *obj)
 				while (obj->pars.line[i++] == '|')
 					j++;
 				if (j > 1)
-					write(1, "minishell: syntax error near unexpected token '||'\n", 51);
+					write(2, "minishell: syntax error near unexpected token '||'\n", 51);
 				else
-					write(1, "minishell: syntax error near unexpected token '|'\n", 50);
+					write(2, "minishell: syntax error near unexpected token '|'\n", 50);
 				obj->flag.without_mistake = 1;
 				return (0);
 			}
@@ -138,6 +137,7 @@ void	s_ctr_sl(int sig)
 
 void	s_ctr_c()
 {
+	errno = 1;
 	ft_putstr("\b\b  \b\b");
 	write(1, "\nminishell : ", 13);
 }
@@ -148,6 +148,7 @@ int		main(int argc, char **argv, char **envp)
 	int		j;
 	int		error;
 	int		wh;
+	char	*leaks;
 
 	obj.standart_fd.fd_in = dup(0);
 	obj.standart_fd.fd_out = dup(1);
@@ -170,8 +171,9 @@ int		main(int argc, char **argv, char **envp)
 		{
 			while (obj.pars.split_string[j] != NULL)
 			{
+				free(obj.pars.line);
+				obj.pars.line = ft_strdup(obj.pars.split_string[j]);
 				obj.flag.valid_com = 1;
-				ft_strdup(obj.pars.split_string[j]);
 				obj.flag.beg = 0;
 				obj.flag.exist_pipe = 0;
 				if ((fn_check_pipe(&obj)) == -1)
@@ -186,35 +188,57 @@ int		main(int argc, char **argv, char **envp)
 						fn_error("not memory allocate\n");
 					while (obj.pars.line_for_pipe[i] != NULL)
 					{
+						leaks = obj.pars.line_for_pipe[i];
 						obj.pars.line_for_pipe[i] = ft_strtrim(obj.pars.line_for_pipe[i], " ");
+						free(leaks);
 						i++;
 					}
-					obj.flag.p_flag.count_pipe = i; //КОЛИЧЕСТВО ПАЙПОВ БЛЯТЬ
-					obj.pars.command_for_pipe = malloc(sizeof(char *) * (i + 2));
-					obj.pars.command_for_pipe[i + 1] = NULL;
-					obj.pars.argument_for_pipe = malloc(sizeof(char *) * (i + 2));
-					obj.pars.argument_for_pipe[i + 1] = NULL;
+					obj.flag.p_flag.count_pipe = i;
+					if (!(obj.pars.command_for_pipe = malloc(sizeof(char *) * (i + 1))))
+						fn_error("no memory allocate");
+					obj.pars.command_for_pipe[i] = NULL;
+					if (!(obj.pars.argument_for_pipe = malloc(sizeof(char *) * (i + 1))))
+						fn_error("no memory allocate");
+					obj.pars.argument_for_pipe[i] = NULL;
 					i = 0;
 					while (obj.pars.line_for_pipe[i] != NULL)
 					{
 						obj.flag.beg = 0;
+						leaks = obj.pars.line;
 						obj.pars.line = ft_strdup(obj.pars.line_for_pipe[i]);
+						free(leaks);
 						if (fn_pars_line(&obj) == 0)
 						{
 							error = 1;
 							break ;
 						}
 						obj.pars.command_for_pipe[i] = ft_strdup(obj.pars.command);
+						free(obj.pars.command);
 						obj.pars.argument_for_pipe[i] = ft_strdup(obj.pars.argument);
+						free(obj.pars.argument);
 						i++;
 					}
 					if (error == 1)
 						break ;
 					if ((fn_process_for_pipes(&obj)) == 0)
 						break ;
+					free_double_array(obj.pars.command_for_pipe);
+					free_double_array(obj.pars.line_for_pipe);
+					free_double_array(obj.pars.argument_for_pipe);
 				}
 				j++;
 			}
+			free_double_array(obj.pars.split_string);
+		}
+		if (obj.redirect.fd != 1)
+		{
+			close(obj.redirect.fd);
+			obj.redirect.fd = 1;
+		}
+		if (obj.redirect.fd_back_redirect != 0)
+		{
+			close(obj.redirect.fd_back_redirect);
+			obj.redirect.fd_back_redirect = 0;
 		}
 		write(1, "minishell : ", 12);
 		free(obj.pars.line);

@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/21 14:52:54 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/03 21:07:04 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/17 14:26:15 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,8 @@ static	void	fn_fill_val(t_obj *obj, int start, int i)
 	int		j;
 	int		k;
 	int		f;
+	char	*leaks;
+	char	*val;
 
 	j = 0;
 	if (!(arg = ft_substr(obj->pars.argument, start, i - start)))
@@ -31,6 +33,7 @@ static	void	fn_fill_val(t_obj *obj, int start, int i)
 	{
 		if (j == 0)
 		{
+			free(arg);
 			fn_not_an_identifier(obj, "=");
 			return ;
 		}
@@ -46,16 +49,22 @@ static	void	fn_fill_val(t_obj *obj, int start, int i)
 			else if ((name[k] >= '0' && name[k] <= '9' && f != 1) || name[k] == '+')
 			{
 				fn_not_an_identifier(obj, arg);
+				free(arg);
+				free(name);
 				return ;
 			}
 		}
-		if ((arg[j] == '\0' || arg[j] == ' ') && fn_search_enviroment(obj, name) == NULL)
+		val = fn_search_enviroment(obj, name);
+		if ((arg[j] == '\0' || arg[j] == ' ') && val == NULL)
 		{
 			export_varible_in_env(&obj->export_list, name, "\n");
 			export_varible_in_env(&obj->env_list, name, "\n");
 		}
-		else if (fn_search_enviroment(obj, name) != NULL)
+		else if (val != NULL)
+		{
+			free(val);
 			return ;
+		}
 		else
 		{
 			start = j;
@@ -65,9 +74,15 @@ static	void	fn_fill_val(t_obj *obj, int start, int i)
 				fn_error("not memory allocate\n");
 			export_varible_in_env(&obj->env_list, name, value);
 			if (value[0] == '\"' || value[0] == '\'')
+			{
+				leaks = value;
 				value = ft_strjoin("\\", value);
-					export_varible_in_env(&obj->export_list, name, value);
+				free(leaks);
+			}
+			export_varible_in_env(&obj->export_list, name, value);
+			free(value);
 		}
+		free(val);
 	}
 	else
 	{
@@ -79,15 +94,21 @@ static	void	fn_fill_val(t_obj *obj, int start, int i)
 		{
 			if ((name[k] <= '0' || name[k] >= '9') && name[k])
 				f = 1;
-			else if (name[k] >= '0' && name[k] <= '9' && f != 1 && name[k] == '+')
+			else if ((name[k] >= '0' && name[k] <= '9' && f != 1) || name[k] == '+')
 			{
+				free(name);
 				fn_not_an_identifier(obj, arg);
+				free(arg);
 				return ;
 			}
 		}
-		if (fn_search_enviroment(obj, name) == NULL)
+		val = fn_search_enviroment(obj, name);
+		if (val == NULL)
 			export_varible_in_env(&obj->export_list, name, "\0");
+		free(val);
 	}
+	free(name);
+	free(arg);
 }
 
 void			fn_valid_exp(t_obj *obj)

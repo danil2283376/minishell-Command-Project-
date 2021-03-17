@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/14 10:52:41 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/15 15:41:01 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/17 15:59:11 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,28 +19,28 @@ int		fn_error_processing(t_obj *obj)
 	if (obj->flag.without_mistake == 1)
 		obj->flag.beg = ft_strlen(obj->pars.line);
 	else if (obj->pars.line[obj->flag.beg] == ';')
-		write(1, "syntax error near unexpected token ';;'\n", 40);
+		write(2, "syntax error near unexpected token ';;'\n", 40);
 	else if (obj->pars.line[obj->flag.beg] == '\0' && obj->pars.line[obj->flag.beg - 1] == ';' && fn_space(obj->pars.line, 0) == obj->flag.beg - 1)
-		write(1, "syntax error near unexpected token ';'\n",39);
+		write(2, "syntax error near unexpected token ';'\n",39);
 	else if (obj->flag.valid_redir == 0)
 	{
 		obj->flag.beg = ft_strlen(obj->pars.line);
 		obj->redirect.count_red -= 2;
 		if (obj->redirect.count_red == 0)
-			write(1, "minishell : syntax error near unexpected token `>'\n", 51);
+			write(2, "minishell : syntax error near unexpected token `>'\n", 51);
 		else
-			write(1, "minishell : syntax error near unexpected token `>>'\n", 52);
+			write(2, "minishell : syntax error near unexpected token `>>'\n", 52);
 	}
 	else if (obj->flag.valid_redir == -1)
 	{
-		write(1, "minishell : syntax error near unexpected token `newline'\n", 57);
+		write(2, "minishell : syntax error near unexpected token `newline'\n", 57);
 		obj->flag.beg = ft_strlen(obj->pars.line);
 	}
 	else if (obj->flag.valid_back_red == -1)
 	{
-		write (1, "minishell: ", 11);
-		write(1, obj->pars.redirect, ft_strlen(obj->pars.redirect));
-		write(1, ": ", 2);
+		write (2, "minishell: ", 11);
+		write(2, obj->pars.redirect, ft_strlen(obj->pars.redirect));
+		write(2, ": ", 2);
 		perror(NULL);
 		obj->flag.beg = ft_strlen(obj->pars.line);
 	}
@@ -48,11 +48,11 @@ int		fn_error_processing(t_obj *obj)
 	{
 		obj->redirect.count_red -= 3;
 		if (obj->redirect.count_red == 0)
-			write(1, "minishell : syntax error near unexpected token `<'\n", 51);
+			write(2, "minishell : syntax error near unexpected token `<'\n", 51);
 		else if (obj->redirect.count_red == 1)
-			write(1, "minishell : syntax error near unexpected token `<<'\n", 52);
+			write(2, "minishell : syntax error near unexpected token `<<'\n", 52);
 		else
-			write(1, "minishell : syntax error near unexpected token `<<<'\n", 53);
+			write(2, "minishell : syntax error near unexpected token `<<<'\n", 53);
 	}
 	else if (obj->flag.multiple_com == 0)
 	{
@@ -85,6 +85,11 @@ void		fn_init_flags(t_obj *obj)
 
 int		fn_pars_line(t_obj *obj)
 {
+	char	*leaks;
+
+	leaks = obj->pars.line;
+	obj->pars.line = ft_strtrim(obj->pars.line, " ");
+	free(leaks);
 	fn_check_environment_variable(obj);
 	fn_init_flags(obj);
 	obj->pars.arg_for_back_redirect = NULL;

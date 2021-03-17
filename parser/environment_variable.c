@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/28 12:13:08 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/09 19:10:03 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/17 16:09:32 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ char	*fill_name(t_obj *obj, int i)
 		i++;
 	if (!(name = ft_substr(obj->pars.line, start, i - start)))
 		fn_error("not memory allocate");
-	// printf("name = %s*\n", name);
 	return (name);
 }
 
@@ -62,13 +61,15 @@ void	fn_check_environment_variable(t_obj *obj)
 	char	*line;
 	char	*name;
 	char	*value;
+	char	*leaks;
+	char	*num;
 
 	i = obj->flag.beg;
 	j = 0;
 	line = NULL;
 	while (obj->pars.line[i] && obj->pars.line[i] != ';')
 	{
-		if (obj->pars.line[i] == '\"' || obj->pars.line[i] == '\'')
+		if (obj->pars.line[i] == '\'')
 		{
 			ch = obj->pars.line[i++];
 			while (obj->pars.line[i] != ch && obj->pars.line[i])
@@ -78,7 +79,13 @@ void	fn_check_environment_variable(t_obj *obj)
 		if (obj->pars.line[i] == '$' && (obj->pars.line[i + 1] != ' ' && obj->pars.line[i + 1] != '\0') && obj->pars.line[i + 1] != '?' && obj->pars.line[i + 1] != '\\')
 		{
 			if (line != NULL)
-				line = ft_strjoin(line, ft_substr(obj->pars.line, j, i - j));
+			{
+				leaks = line;
+				num = ft_substr(obj->pars.line, j, i - j);
+				line = ft_strjoin(line, num);
+				free(num);
+				free(leaks);
+			}
 			else
 				line = ft_substr(obj->pars.line, j, i - j);
 			name = fill_name(obj, i + 1);
@@ -91,29 +98,56 @@ void	fn_check_environment_variable(t_obj *obj)
 					if (!line)
 						line = ft_strdup(value);
 					else
+					{
+						leaks = line;
 						line = ft_strjoin(line, value);
+						free(leaks);
+					}
+					free(value);
 				}
 				while (obj->pars.line[i] != ' ' && obj->pars.line[i] && obj->pars.line[i] != '=' && obj->pars.line[i] != '\"' && obj->pars.line[i] != '\'' && obj->pars.line[i] != '$')
 					i++;
 				j = i;
+				free(name);
 			}
 		}
 		else if (obj->pars.line[i] == '$' && obj->pars.line[i + 1] == '?')
 		{
 			if (line != NULL)
-				line = ft_strjoin(line, ft_substr(obj->pars.line, j, i - j));
+			{
+				leaks = line;
+				num = ft_substr(obj->pars.line, j, i - j);
+				line = ft_strjoin(line, num);
+				free(num);
+				free(leaks);
+			}
 			else
 				line = ft_substr(obj->pars.line, j, i - j);
 			i+=2;
 			j = i;
 			if (!line)
-				line = ft_strdup(ft_itoa(errno));
+			{
+				num = ft_itoa(errno);
+				line = ft_strdup(num);
+				free(num);
+			}
 			else
-				line = ft_strjoin(line, ft_itoa(errno));
+			{
+				leaks = line;
+				num = ft_itoa(errno);
+				line = ft_strjoin(line, num);
+				free(num);
+				free(leaks);
+			}
 			while (obj->pars.line[i] != ' ' && obj->pars.line[i])
 						i++;
 			if (i > j)
-				line = ft_strjoin(line, ft_substr(obj->pars.line, j, i - j));
+			{
+				leaks = line;
+				num = ft_substr(obj->pars.line, j, i - j);
+				line = ft_strjoin(line, num);
+				free(leaks);
+			}
 			j = i;
 		}
 		else if (obj->pars.line[i] == '$' && (obj->pars.line[i + 1] == ' ' || obj->pars.line[i + 1] == '\0' || obj->pars.line[i + 1] == '\\'))
@@ -122,7 +156,16 @@ void	fn_check_environment_variable(t_obj *obj)
 			i+=1;
 	}
 	if (ft_strlen(obj->pars.line) > j)
+	{
+		leaks = line;
 		line = ft_strjoin(line, &obj->pars.line[j]);
+		free(leaks);
+	}
 	if (line != NULL)
-		obj->pars.line = line;
+	{
+		leaks = obj->pars.line;
+		obj->pars.line = ft_strdup(line);
+		free(leaks);
+		free(line);
+	}
 }

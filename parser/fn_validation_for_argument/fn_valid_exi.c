@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/21 15:03:01 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/09 19:25:51 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/17 11:22:53 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ void	fn_valid_exi(t_obj *obj)
 					obj->flag.c_flag.exi -= 256;
 			}
 		}
+		errno = obj->flag.c_flag.exi;
 		exit(obj->flag.c_flag.exi);
 	}
 }

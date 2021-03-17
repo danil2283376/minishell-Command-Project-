@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/18 20:04:49 by melisha           #+#    #+#             */
-/*   Updated: 2021/02/21 15:05:08 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/16 14:33:40 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 void	fn_valid_arg(t_obj *obj)
 {
-	// obj->flag.valid_arg = 0;
 	if (obj->flag.c_flag.exp == 1)
 		fn_valid_exp(obj);
 	if (obj->flag.c_flag.un == 1)

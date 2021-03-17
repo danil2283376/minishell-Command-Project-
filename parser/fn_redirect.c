@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/22 10:42:40 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/15 17:02:30 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/16 20:11:16 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,13 @@
 int		fn_redirect(t_obj *obj)
 {
 	int		i;
+	char	*leaks;
 
+	if (obj->redirect.fd != 1)
+	{
+		close(obj->redirect.fd);
+		obj->redirect.fd = 1;
+	}
 	obj->flag.beg += 1;
 	i = obj->flag.beg;
 	obj->redirect.count_red = 0;
@@ -78,7 +84,9 @@ int		fn_redirect(t_obj *obj)
 	}
 	if (!(obj->pars.redirect = ft_substr(obj->pars.line, obj->flag.beg, i - obj->flag.beg)))
 		fn_error("not memory allocate");
+	leaks = obj->pars.redirect;
 	obj->pars.redirect = fn_circumcision(obj->pars.redirect, obj);
+	free(leaks);
 	obj->flag.beg = fn_space(obj->pars.line, i);
 	if (obj->redirect.count_red == 0)
 		obj->redirect.fd = open(obj->pars.redirect, O_TRUNC | O_CREAT | O_RDWR, 0666);
@@ -88,5 +96,6 @@ int		fn_redirect(t_obj *obj)
 		if (obj->redirect.fd == -1)
 			obj->redirect.fd = open(obj->pars.redirect, O_CREAT | O_RDWR, 0666);
 	}
+	free(obj->pars.redirect);
 	return (obj->flag.beg);
 }

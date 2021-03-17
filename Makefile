@@ -5,8 +5,7 @@ OBJ = *.o
 HEAD = libminishell.h
 
 all:
-	cd libasm && make && make clean
-	gcc $(SRC) libasm/libasm.a -o $(NAME)
+	gcc $(SRC) -o $(NAME)
 
 clean:
 	rm -rf $(NAME)

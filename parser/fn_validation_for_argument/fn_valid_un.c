@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/21 14:56:11 by melisha           #+#    #+#             */
-/*   Updated: 2021/02/21 15:01:28 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/17 15:00:17 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,13 @@ void	fn_valid_arg_for_un(t_obj *obj, char *arg)
 	}
 	if (f == 0)
 		unset(&obj->env_list, arg);
+	free(arg);
 }
 
 static void		fn_fill_val(t_obj *obj, char *arg, int start, int i)
 {
+	if (arg != NULL)
+		free(arg);
 	arg = ft_substr(obj->pars.argument, start, i - start);
 	fn_valid_arg_for_un(obj, arg);
 }
@@ -47,6 +50,7 @@ void	fn_valid_un(t_obj *obj)
 
 	i = 0;
 	start = 0;
+	arg = NULL;
 	while (obj->pars.argument[i] != '\0' && obj->pars.argument[fn_space(obj->pars.argument, i)])
 	{
 		if (obj->pars.argument[i] == ' ')
