@@ -1,110 +1,120 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   env.c                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/03/18 15:35:39 by scolen            #+#    #+#             */
+/*   Updated: 2021/03/18 20:23:06 by melisha          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../libminishell.h"
 
-int				exist_value_env(t_list *list, char *value)
+void			not_exist_varible(t_list *env_list,
+	char *name_varible, char *value_varible)
 {
-	t_list *copy;
-	int i;
-	char *str;
-	int len_value;
+	char *leaks;
+	char *new_line;
 
-	copy = list;
-	i = 0;
-	len_value = ft_strlen(value);
-	while (copy->next != NULL)
+	if (value_varible[0] == '\0')
 	{
-		copy = copy->next;
-		str = (char *)copy->content;
-		while (str[i] != '=' && str[i] && value[i])
-		{
-			if (str[i] == value[i])
-				i++;
-			else
-				break ;
-		}
-		if (len_value == i)
-			return (1);
-		i = 0;
+		new_line = ft_strdup(name_varible);
+		ft_lstadd_back(&env_list, ft_lstnew(new_line));
 	}
-	return (0);
+	else
+	{
+		new_line = ft_strjoin(name_varible, "=");
+		if (*value_varible != '\n')
+		{
+			leaks = new_line;
+			new_line = ft_strjoin(new_line, value_varible);
+			free(leaks);
+		}
+		ft_lstadd_back(&env_list, ft_lstnew(new_line));
+	}
+}
+
+int				exist_varible1(char *str, char *name_varible)
+{
+	int i;
+
+	i = 0;
+	while (str[i] != '=' && str[i] && name_varible[i])
+	{
+		if (str[i] == name_varible[i])
+			i++;
+		else
+			break ;
+	}
+	return (i);
+}
+
+t_list			*take_before_list(t_list *env_list, int j)
+{
+	t_list	*copy_before;
+	int		k;
+
+	copy_before = env_list->next;
+	k = 0;
+	while (k != (j - 1))
+	{
+		copy_before = copy_before->next;
+		k++;
+	}
+	return (copy_before);
+}
+
+void			exist_varible(t_varible_list varible_lists,
+	t_list *env_list, char *new_line)
+{
+	char	*leaks;
+	int		j;
+
+	j = 0;
+	while (varible_lists.copy->next != NULL)
+	{
+		varible_lists.copy = varible_lists.copy->next;
+		if (varible_lists.len_value == exist_varible1(
+			(char *)varible_lists.copy->content, varible_lists.name_varible))
+		{
+			varible_lists.current = varible_lists.copy;
+			break ;
+		}
+		j++;
+	}
+	varible_lists.copy_after = varible_lists.copy->next;
+	varible_lists.copy_before = take_before_list(env_list, j);
+	free(varible_lists.current->content);
+	free(varible_lists.copy);
+	new_line = ft_strjoin(varible_lists.name_varible, "=");
+	leaks = new_line;
+	new_line = ft_strjoin(new_line, varible_lists.value_varible);
+	free(leaks);
+	varible_lists.copy_before->next = ft_lstnew(new_line);
+	varible_lists.copy_before->next->next = varible_lists.copy_after;
 }
 
 void			export_varible_in_env(t_list *env_list,
 	char *name_varible, char *value_varible)
 {
-	int boolean;
-	t_list *copy;
-	int len_value;
-	char *str;
-	int i;
-	int j;
-	int k;
-	t_list *copy_before;
-	t_list *new_list;
-	t_list *copy_after;
-	char *leaks;
-	t_list *current;
+	int				j;
+	int				k;
+	char			*leaks;
+	t_varible_list	varible_lists;
+	char			*new_line;
 
-	boolean = exist_value_env(env_list, name_varible);
-	len_value = ft_strlen(name_varible);
-	copy = env_list;
-	i = 0;
+	varible_lists.len_value = ft_strlen(name_varible);
+	varible_lists.copy = env_list;
 	j = 0;
 	k = 0;
-	char *new_line;
-	if (boolean)
+	if (exist_value_env(env_list, name_varible))
 	{
-		while (copy->next != NULL)
-		{
-			copy = copy->next;
-			str = (char *)copy->content;
-			while (str[i] != '=' && str[i] && name_varible[i])
-			{
-				if (str[i] == name_varible[i])
-					i++;
-				else
-					break ;
-			}
-			if (len_value == i)
-			{
-				current = copy;
-				break ;
-			}
-			j++;
-		}
-		copy_before = env_list->next;
-		copy_after = copy->next;
-		while (k != (j - 1))
-		{
-			copy_before = copy_before->next;
-			k++;
-		}
-		free(current->content);
-		free(copy);
-		new_line = ft_strjoin(name_varible, "=");
-		leaks = new_line;
-		new_line = ft_strjoin(new_line, value_varible); // MALLOC
-		free(leaks);
-		copy_before->next = ft_lstnew(new_line);
-		copy_before->next->next = copy_after;
+		varible_lists.name_varible = name_varible;
+		varible_lists.value_varible = value_varible;
+		exist_varible(varible_lists, env_list, new_line);
 	}
 	else
-	{
-		char *leaks1;
-		if (value_varible[0] == '\0')
-		{
-			new_line = ft_strdup(name_varible);
-			ft_lstadd_back(&env_list, ft_lstnew(new_line));
-		}
-		else
-		{
-			new_line = ft_strjoin(name_varible, "=");
-			if (*value_varible != '\n')
-			{
-				leaks = new_line;
-				new_line = ft_strjoin(new_line, value_varible);
-				free(leaks);
-			}
-			ft_lstadd_back(&env_list, ft_lstnew(new_line));
-		}
-	}
+		not_exist_varible(env_list, name_varible, value_varible);
 }

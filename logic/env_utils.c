@@ -1,31 +1,41 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   valid_arg.c                                        :+:      :+:    :+:   */
+/*   env_utils.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/02/18 20:04:49 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/18 14:56:06 by melisha          ###   ########.fr       */
+/*   Created: 2021/03/18 20:22:29 by melisha           #+#    #+#             */
+/*   Updated: 2021/03/18 20:23:11 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../libminishell.h"
 
-void	fn_valid_arg(t_obj *obj)
+int				exist_value_env(t_list *list, char *value)
 {
-	if (obj->flag.c_flag.exp == 1)
-		fn_valid_exp(obj);
-	if (obj->flag.c_flag.un == 1)
-		fn_valid_un(obj);
-	if (obj->flag.c_flag.en == 1)
-		fn_valid_en(obj);
-	if (obj->flag.c_flag.exi == 1)
-		fn_valid_exi(obj);
-	if (obj->flag.c_flag.cd == 1)
-		fn_valid_cd(obj);
-	if (obj->flag.c_flag.ec == 1)
-		fn_valid_ec(obj);
-	if (obj->flag.c_flag.pw == 1)
-		fn_valid_pw(obj);
+	t_list	*copy;
+	int		i;
+	char	*str;
+	int		len_value;
+
+	copy = list;
+	i = 0;
+	len_value = ft_strlen(value);
+	while (copy->next != NULL)
+	{
+		copy = copy->next;
+		str = (char *)copy->content;
+		while (str[i] != '=' && str[i] && value[i])
+		{
+			if (str[i] == value[i])
+				i++;
+			else
+				break ;
+		}
+		if (len_value == i)
+			return (1);
+		i = 0;
+	}
+	return (0);
 }

@@ -6,29 +6,24 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/18 11:36:12 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/18 11:40:34 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/18 14:49:12 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libminishell.h"
 
-int			pars_line_with_pipes(t_obj *obj)
+int			begin_process_and_free(t_obj *obj)
 {
-	int		i;
-	char	*leaks;
+	if ((fn_process_for_pipes(obj)) == 0)
+		return (-1);
+	free_double_array(obj->pars.command_for_pipe);
+	free_double_array(obj->pars.line_for_pipe);
+	free_double_array(obj->pars.argument_for_pipe);
+	return (0);
+}
 
-	i = 0;
-	obj->pars.line_for_pipe = NULL;
-	if (!(obj->pars.line_for_pipe = ft_split(obj->pars.line, '|')))
-		fn_error("not memory allocate\n");
-	while (obj->pars.line_for_pipe[i] != NULL)
-	{
-		leaks = obj->pars.line_for_pipe[i];
-		obj->pars.line_for_pipe[i] = ft_strtrim(obj->pars.line_for_pipe[i], " ");
-		free(leaks);
-		i++;
-	}
-	obj->flag.p_flag.count_pipe = i;
+int			fill_com_and_arg_in_pipes(t_obj *obj, int i, char *leaks)
+{
 	if (!(obj->pars.command_for_pipe = malloc(sizeof(char *) * (i + 1))))
 		fn_error("no memory allocate");
 	obj->pars.command_for_pipe[i] = NULL;
@@ -50,10 +45,26 @@ int			pars_line_with_pipes(t_obj *obj)
 		free(obj->pars.argument);
 		i++;
 	}
-	if ((fn_process_for_pipes(obj)) == 0)
-		return (-1);
-	free_double_array(obj->pars.command_for_pipe);
-	free_double_array(obj->pars.line_for_pipe);
-	free_double_array(obj->pars.argument_for_pipe);
-	return (0);
+	return (begin_process_and_free(obj));
+}
+
+int			pars_line_with_pipes(t_obj *obj)
+{
+	int		i;
+	char	*leaks;
+
+	i = 0;
+	obj->pars.line_for_pipe = NULL;
+	if (!(obj->pars.line_for_pipe = ft_split(obj->pars.line, '|')))
+		fn_error("not memory allocate\n");
+	while (obj->pars.line_for_pipe[i] != NULL)
+	{
+		leaks = obj->pars.line_for_pipe[i];
+		obj->pars.line_for_pipe[i] =
+		ft_strtrim(obj->pars.line_for_pipe[i], " ");
+		free(leaks);
+		i++;
+	}
+	obj->flag.p_flag.count_pipe = i;
+	return (fill_com_and_arg_in_pipes(obj, i, leaks));
 }

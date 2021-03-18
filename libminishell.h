@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/14 13:08:24 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/18 12:53:59 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/18 21:03:09 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,4 +88,43 @@ int		ft_putstr(char *line);
 int		fn_check_before_redirect(t_obj *obj);
 int		pars_line_with_pipes(t_obj *obj);
 void	utils_main(t_obj *obj);
+int		fn_error_processing(t_obj *obj);
+void	fn_error_valid_redir_zero(t_obj *obj);
+void	fn_error_valid_redir_minus(t_obj *obj);
+void	fn_error_valid_back_redir_minus(t_obj *obj);
+void	fn_error_valid_back_redir_zero(t_obj *obj);
+void	fn_error_mult_com(t_obj *obj);
+void	fn_circumcision_utils(char *line, t_mass *mass);
+int		fn_circumcision_fill_red(char *line, int i);
+void	fn_circumcision_fill_utils(t_mass *mass, char *line);
+int		fn_circumcision_count_red(char *line, int i);
+int		fn_pars_arg_utils(t_obj *obj, int i, int redir);
+int		fn_pars_arg_utils_cont(t_obj *obj, int i, int redir);
+int		fn_zero_file(t_obj *obj);
+int		fn_after_error_back_redirect(t_obj *obj, int i);
+int		fn_check_error_with_back_redirect(t_obj *obj);
+int		init_param_back_redirect(t_obj *obj);
+int		fn_after_init_param_back_redirect(t_obj *obj, int i);
+void	fifth_utils_check_env(t_obj *obj, t_env_var *var);
+void	fouth_utils_check_env(t_obj *obj, t_env_var *var);
+void	third_utils_check_env(t_obj *obj, t_env_var *var);
+void	second_utils_check_env(t_obj *obj, t_env_var *var);
+void	first_utils_check_env(t_obj *obj, t_env_var *var);
+char	*fill_name(t_obj *obj, int i);
+int		exist_value_env(t_list *list, char *value);
+void	search_start(t_obj *obj, t_command_varible_path *varible, int o);
+void	path_null(t_obj *obj, t_command_varible_path *varible, int o);
+void	search_path(t_obj *obj, t_command_varible_path *varible);
+void	free_double_array(char **array);
+char	*ft_my_strjoin(char const *s1, char const *s2);
+void	threatment_parrent_pipe(t_obj *obj, t_threatment_pipe *varible);
+void	threatment_redirect_in_pipe(t_obj *obj, t_threatment_pipe *varible);
+void	threatment_child_pipe(t_obj *obj, t_threatment_pipe *varible);
+int		fn_check_red(t_obj *obj, int i);
+void	search_command_varible_path(t_obj *obj, int o);
+void	threament_fork_child(t_obj *obj, t_process_for_pipes *varible);
+void	threatment_child_solo_command(t_obj *obj, t_process_for_pipes *varible);
+void	threatment_null_path(t_obj *obj, t_process_for_pipes *varible);
+void	search_varible_in_path(t_obj *obj, t_process_for_pipes *varible);
+int		threatment_pipe(t_obj *obj);
 #endif

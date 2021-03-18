@@ -3,38 +3,47 @@
 /*                                                        :::      ::::::::   */
 /*   fn_valid_exi.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
+/*   By: scolen <scolen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/21 15:03:01 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/17 11:22:53 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/18 19:15:31 by scolen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "validator.h"
 
-void	fn_valid_exi(t_obj *obj)
+void	start_exit(t_obj *obj, int *i, int check_first_time)
 {
-	int		i;
-	static	int	check_first_time = 0;
-
-	i = 0;
-	while (obj->pars.argument[i] && obj->pars.argument[i] != ' ')
+	*i = 0;
+	while (obj->pars.argument[*i] && obj->pars.argument[*i] != ' ')
 	{
-		if ((obj->pars.argument[i] == '+' || obj->pars.argument[i] == '-') && check_first_time == 0)
+		if ((obj->pars.argument[*i] == '+' || obj->pars.argument[*i] == '-')
+		&& check_first_time == 0)
 		{
 			check_first_time = 1;
 			i++;
 		}
-		if ((obj->pars.argument[i] < '0' || obj->pars.argument[i] > '9') && obj->pars.argument[i])
+		if ((obj->pars.argument[*i] < '0' || obj->pars.argument[*i] > '9')
+		&& obj->pars.argument[*i])
 			obj->flag.c_flag.exi = 255;
-		i++;
+		*i = *i + 1;
 	}
 	if (obj->flag.c_flag.exi == 255)
 	{
-		obj->pars.argument = ft_substr(obj->pars.argument, 0, i);
+		obj->pars.argument = ft_substr(obj->pars.argument, 0, *i);
 		fn_numberic_argument_required(obj);
 	}
-	if (obj->flag.c_flag.exi != 255 && obj->pars.argument[fn_space(obj->pars.argument, i)] != '\0')
+}
+
+void	fn_valid_exi(t_obj *obj)
+{
+	int			i;
+	static	int	check_first_time = 0;
+
+	i = 0;
+	start_exit(obj, &i, check_first_time);
+	if (obj->flag.c_flag.exi != 255 &&
+	obj->pars.argument[fn_space(obj->pars.argument, i)] != '\0')
 		fn_too_many_arguments(obj);
 	else
 	{

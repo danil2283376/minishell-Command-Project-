@@ -6,109 +6,48 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/22 15:13:19 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/16 13:44:37 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/18 16:49:11 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../libminishell.h"
 
-char	*fn_circumcision_fill(char *line, int len, t_obj *obj)
+char	*fn_circumcision_fill(char *line, t_obj *obj, t_mass *mass)
 {
-	int		i;
-	char	*com;
 	char	ch;
-	char	redch;
 
-	i = -1;
-	if (!(com = (char *)malloc(sizeof(char) * (len + 1))))
+	mass->i = -1;
+	if (!(mass->com = (char *)malloc(sizeof(char) * (mass->len + 1))))
 		fn_error("not memory allocate");
-	com[len] = '\0';
-	len = 0;
-	while (line[++i])
+	mass->com[mass->len] = '\0';
+	mass->len = 0;
+	while (line[++mass->i])
 	{
-		if (line[i] == ';')
+		if (line[mass->i] == ';')
 			break ;
-		if ((line[i] == '>' || line[i] == '<') && obj->flag.exist_pipe == 0)
-		{
-			redch = line[i];
-			while (line[i] == redch)
-				i++;
-			i = fn_space(line, i);
-			while (line[i] != ' ' && line[i])
-				i++;
-			if (line[i] && line[i + 1] != redch)
-				i++;
-		}
-		while ((line[i] == '\'' || line[i] == '\"') && line[i])
-		{
-			ch = line[i];
-			while (line[++i] != ch && line[i])
-				com[len++] = line[i];
-			ch = 0;
-			i++;
-		}
-		while (line[i] == '\\')
-		{
-			i++;
-			com[len] = line[i];
-			len++;
-			i++;
-		}
-		if (line[i] == ' ')
-		{
-			com[len++] = line[i];
-			i = fn_space(line, i) - 1;
-		}
-		else
-			com[len++] = line[i];
+		if ((line[mass->i] == '>' || line[mass->i] == '<')
+		&& obj->flag.exist_pipe == 0)
+			mass->i = fn_circumcision_fill_red(line, mass->i);
+		fn_circumcision_fill_utils(mass, line);
 	}
-	return (com);
+	return (mass->com);
 }
 
 char	*fn_circumcision(char *line, t_obj *obj)
 {
-	int		i;
-	int		len;
 	char	ch;
-	char	redch;
+	t_mass	mass;
 
-	i = -1;
-	len = 0;
-	while (line[++i])
+	mass.i = -1;
+	mass.len = 0;
+	while (line[++mass.i])
 	{
-		if (line[i] == ';')
+		if (line[mass.i] == ';')
 			break ;
-		if ((line[i] == '>' || line[i] == '<') && obj->flag.exist_pipe == 0)
-		{
-			redch = line[i];
-			while (line[i] == redch)
-				i++;
-			i = fn_space(line, i);
-			while (line[i] != ' ' && line[i])
-				i++;
-			if (line[i] && line[i + 1] != redch)
-				i++;
-		}
-		while ((line[i] == '\'' || line[i] == '\"') && line[i])
-		{
-			ch = line[i];
-			while (line[++i] != ch && line[i])
-				len++;
-			ch = 0;
-			i++;
-		}
-		while (line[i] == '\\')
-		{
-			i+=2;
-			len+=1;
-		}
-		if (line[i] == ' ')
-		{
-			len += 1;
-			i = fn_space(line, i) - 1;
-		}
-		else
-			len++;
+		if ((line[mass.i] == '>' || line[mass.i] == '<')
+		&& obj->flag.exist_pipe == 0)
+			mass.i = fn_circumcision_count_red(line, mass.i);
+		fn_circumcision_utils(line, &mass);
 	}
-	return(fn_circumcision_fill(line, len, obj));
+	return (fn_circumcision_fill(line, obj, &mass));
 }

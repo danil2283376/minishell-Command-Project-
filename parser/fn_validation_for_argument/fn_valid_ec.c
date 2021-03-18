@@ -3,66 +3,74 @@
 /*                                                        :::      ::::::::   */
 /*   fn_valid_ec.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
+/*   By: scolen <scolen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/21 15:04:56 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/17 13:14:33 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/18 19:08:14 by scolen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "validator.h"
 
-static	void	fn_check_flags(t_obj *obj)
+void			start_echo(t_obj *obj, t_echo *echo)
 {
-	int		i;
-	int		len;
-	int		start;
-	char	*new_arg;
-
-	i = 0;
-	start = 0;
-	len = 0;
-	new_arg = NULL;
-	while (obj->pars.argument[i])
+	echo->i = 0;
+	echo->start = 0;
+	echo->len = 0;
+	echo->new_arg = NULL;
+	while (obj->pars.argument[echo->i])
 	{
-		if ((i == 0 || obj->pars.argument[i - 1] == ' ') && obj->pars.argument[i] == '-' && obj->pars.argument[i + 1] == 'n'
-		&& (obj->pars.argument[i + 2] == ' ' || obj->pars.argument[i + 2] == '\0'))
+		if ((echo->i == 0 || obj->pars.argument[echo->i - 1] == ' ')
+			&& obj->pars.argument[echo->i] == '-'
+			&& obj->pars.argument[echo->i + 1] == 'n'
+			&& (obj->pars.argument[echo->i + 2] == ' '
+			|| obj->pars.argument[echo->i + 2] == '\0'))
 		{
-			i += 2;
-			i = fn_space(obj->pars.argument, i);
+			echo->i += 2;
+			echo->i = fn_space(obj->pars.argument, echo->i);
 		}
 		else
 		{
-			i++;
-			len++;
+			echo->i++;
+			echo->len++;
 		}
 	}
-	if (!(new_arg = (char *)malloc(sizeof(char) * (len + 1))))
+	if (!(echo->new_arg = (char *)malloc(sizeof(char) * (echo->len + 1))))
 		fn_error("not memory allocate");
-	i = 0;
-	len = 0;
-	while (obj->pars.argument[i])
-	{
-		if ((i == 0 || obj->pars.argument[i - 1] == ' ') && obj->pars.argument[i] == '-' && obj->pars.argument[i + 1] == 'n'
-		&& (obj->pars.argument[i + 2] == ' ' || obj->pars.argument[i + 2] == '\0'))
-		{
-			obj->flag.c_flag.fl_ec = 1;
-			i += 2;
-			i = fn_space(obj->pars.argument, i);
-		}
-		else
-		{
-			new_arg[len] = obj->pars.argument[i];
-			i++;
-			len++;
-		}
-	}
-	new_arg[len] = '\0';
-	free(obj->pars.argument);
-	obj->pars.argument = new_arg;
+	echo->i = 0;
+	echo->len = 0;
 }
 
-void	fn_valid_ec(t_obj *obj)
+static	void	fn_check_flags(t_obj *obj)
+{
+	t_echo		echo;
+
+	start_echo(obj, &echo);
+	while (obj->pars.argument[echo.i])
+	{
+		if ((echo.i == 0 || obj->pars.argument[echo.i - 1] == ' ')
+		&& obj->pars.argument[echo.i] == '-' &&
+		obj->pars.argument[echo.i + 1] == 'n'
+		&& (obj->pars.argument[echo.i + 2] == ' '
+		|| obj->pars.argument[echo.i + 2] == '\0'))
+		{
+			obj->flag.c_flag.fl_ec = 1;
+			echo.i += 2;
+			echo.i = fn_space(obj->pars.argument, echo.i);
+		}
+		else
+		{
+			echo.new_arg[echo.len] = obj->pars.argument[echo.i];
+			echo.i++;
+			echo.len++;
+		}
+	}
+	echo.new_arg[echo.len] = '\0';
+	free(obj->pars.argument);
+	obj->pars.argument = echo.new_arg;
+}
+
+void			fn_valid_ec(t_obj *obj)
 {
 	fn_check_flags(obj);
 	write(obj->redirect.fd, obj->pars.argument, ft_strlen(obj->pars.argument));
