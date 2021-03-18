@@ -6,13 +6,13 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/21 15:04:19 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/18 19:56:59 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/18 21:22:33 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "validator.h"
 
-void	fn_valid_pw(t_obj *obj)
+void	fn_valid_pw()
 {
 	ft_pwd();
 }

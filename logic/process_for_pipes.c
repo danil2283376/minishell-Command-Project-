@@ -6,13 +6,13 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/25 18:59:03 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/18 21:02:37 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/18 21:20:26 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../libminishell.h"
 
-void	threatment_our_command(t_obj *obj, t_process_for_pipes *varible)
+void	threatment_our_command(t_obj *obj)
 {
 	if (obj->flag.valid_com != 0 && obj->flag.valid_redir == 1)
 		fn_valid_arg(obj);
@@ -59,7 +59,7 @@ int		fn_process_for_pipes(t_obj *obj)
 			obj->flag.valid_com = 1;
 			obj->pid = 0;
 		}
-		threatment_our_command(obj, &varible);
+		threatment_our_command(obj);
 	}
 	return (close_fd(obj));
 }

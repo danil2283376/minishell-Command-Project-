@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/14 13:08:24 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/18 21:03:09 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/18 21:40:31 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void	output_list(t_list *list);
 void	output_export_list(t_list *export);
 int		exist_value_env(t_list *list, char *value);
 void	export_varible_in_env(t_list *env_list,
-	char *name_varible, char *value_varible);
+		char *name_varible, char *value_varible);
 int		get_next_line(char **line, int fd);
 void	sorting_export_list(t_list *list);
 void	export_varible_in_env(t_list *env_list,
@@ -52,7 +52,7 @@ int		fn_pars_line(t_obj *obj);
 void	fn_pars_command(t_obj *obj);
 int		ft_atoi(const char *str);
 char	*ft_strdup(const char *s1);
-size_t	ft_strlen(const char *str);
+int		ft_strlen(const char *str);
 void	*ft_bzero(void *s, size_t n);
 void	*ft_calloc(size_t nmemb, size_t size);
 char	*ft_strjoin(char const *s1, char const *s2);
@@ -65,7 +65,7 @@ void	fn_not_a_directory(t_obj *obj);
 void	fn_numberic_argument_required(t_obj *obj);
 void	fn_command_not_found(t_obj *obj);
 void	fn_too_many_arguments(t_obj *obj);
-char     *fn_circumcision(char *line, t_obj *obj);
+char	*fn_circumcision(char *line, t_obj *obj);
 void	fn_pars_argument(t_obj *obj);
 int		fn_valid_command(t_obj *obj);
 void	fn_valid_arg(t_obj *obj);
@@ -82,7 +82,7 @@ char	*fn_search_enviroment(t_obj *obj, char *name);
 int		ft_strcmp(char *s1, char *s2);
 char	*fn_circ_for_red(char *line, t_obj *obj);
 char	**ft_split_argv(char const *s, char c);
-void    free_double_array(char **array);
+void	free_double_array(char **array);
 int		fn_check_pipe(t_obj *obj);
 int		ft_putstr(char *line);
 int		fn_check_before_redirect(t_obj *obj);

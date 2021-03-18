@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/14 13:03:19 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/18 14:53:12 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/18 21:19:51 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,8 @@ void	s_ctr_c(int key)
 
 int		main(int argc, char **argv, char **envp)
 {
-	int		j;
-
+	(void)argc;
+	(void)argv;
 	g_obj.standart_fd.fd_in = dup(0);
 	g_obj.standart_fd.fd_out = dup(1);
 	write(1, "minishell : ", 12);

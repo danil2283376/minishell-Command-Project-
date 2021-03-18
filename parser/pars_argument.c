@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/15 19:21:43 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/18 17:25:44 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/18 21:26:36 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ void			fn_insert_err_utils(int i, t_obj *obj)
 	char	*num;
 	char	*leaks;
 
+	num = NULL;
 	leaks = obj->pars.argument;
 	if (!(save = ft_strdup(obj->pars.argument)) ||
 	!(obj->pars.argument =

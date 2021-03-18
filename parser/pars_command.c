@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/14 17:21:56 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/18 17:00:22 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/18 21:27:07 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,6 @@ int		fn_pars_command_utils(t_obj *obj, int i)
 void	fn_pars_command(t_obj *obj)
 {
 	int		i;
-	int		redir;
-	int		save;
 	char	*leaks;
 
 	i = obj->flag.beg;

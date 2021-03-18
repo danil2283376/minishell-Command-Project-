@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/17 18:50:13 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/17 20:38:55 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/18 21:20:44 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@ void			output_export_list(t_list *export)
 {
 	t_list	*copy;
 	int		i;
-	char	*str;
 	int		quite;
 
 	copy = export->next;

@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/17 18:46:05 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/17 19:19:11 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/18 21:27:53 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ char	*return_value(t_list *env_list, t_list *export_list)
 
 	copy = env_list->next;
 	name = ft_strdup("SHLVL");
+	(void)export_list;
 	while (copy)
 	{
 		i = 0;

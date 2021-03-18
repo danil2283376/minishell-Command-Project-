@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/18 15:35:39 by scolen            #+#    #+#             */
-/*   Updated: 2021/03/18 20:23:06 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/18 21:22:09 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,10 +101,10 @@ void			export_varible_in_env(t_list *env_list,
 {
 	int				j;
 	int				k;
-	char			*leaks;
 	t_varible_list	varible_lists;
 	char			*new_line;
 
+	new_line = NULL;
 	varible_lists.len_value = ft_strlen(name_varible);
 	varible_lists.copy = env_list;
 	j = 0;

@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/21 14:52:54 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/18 20:01:53 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/18 21:37:39 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void			exist_equal_continue1(t_obj *obj, t_export *export, int start)
 	free(export->val);
 }
 
-void			exist_equal_continue(t_obj *obj, t_export *export)
+int			exist_equal_continue(t_obj *obj, t_export *export)
 {
 	while (export->name[++export->k])
 	{
@@ -56,51 +56,58 @@ void			exist_equal_continue(t_obj *obj, t_export *export)
 			fn_not_an_identifier(obj, export->arg);
 			free(export->arg);
 			free(export->name);
-			return ;
+			return (-1);
 		}
 	}
+	return (0);
 }
 
-void			exist_equal(t_obj *obj, t_export *export, int start)
+int			exist_equal(t_obj *obj, t_export *export, int start)
 {
 	if (export->j == 0)
 	{
 		free(export->arg);
 		fn_not_an_identifier(obj, "=");
-		return ;
+		return (-1);
 	}
 	if (!(export->name = ft_substr(export->arg, 0, export->j)))
 		fn_error("not memory allocate\n");
 	export->j++;
 	export->k = -1;
 	export->f = 0;
-	exist_equal_continue(obj, export);
+	if ((exist_equal_continue(obj, export)) == -1)
+		return (-1);
 	exist_equal_continue1(obj, export, start);
+	return (0);
 }
 
 static	void	fn_fill_val(t_obj *obj, int start, int i)
 {
 	t_export	export;
+	int			k;
 
 	export.j = 0;
+	k = 0;
 	if (!(export.arg = ft_substr(obj->pars.argument, start, i - start)))
 		fn_error("not memory allocate\n");
 	while (export.arg[export.j] != ' ' && export.arg[export.j]
 	!= '\0' && export.arg[export.j] != '=')
 		export.j++;
 	if (export.arg[export.j] == '=')
-		exist_equal(obj, &export, start);
+	{
+		if ((exist_equal(obj, &export, start)) == -1)
+			return ;
+	}
 	else
-		not_exist_equal(obj, &export, start);
+		if ((not_exist_equal(obj, &export, start)) == -1)
+			return ;
 	free(export.name);
 	free(export.arg);
 }
 
 void			fn_valid_exp(t_obj *obj)
 {
-	char	*arg;
 	int		i;
-	int		j;
 	int		start;
 
 	i = 0;
