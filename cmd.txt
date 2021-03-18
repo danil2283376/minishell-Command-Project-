@@ -36,3 +36,4 @@ export 1TEST= ;
 e
 export TEST="ls -l - a" ; echo $TEST ; $LS ; env | sort | grep -v SHLVL | grep -v _=    #PIPE
 echo > test'sticked' bonjour
+a
