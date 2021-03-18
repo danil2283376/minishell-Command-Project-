@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/14 13:08:24 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/17 14:29:16 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/18 12:53:59 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,10 +33,13 @@ void	ft_lstiter(t_list *lst, void (*f)(void *));
 t_list	*ft_lstmap(t_list *lst,
 		void *(*f)(void *), void (*del)(void *));
 int		ft_strncmp(const char *s1, const char *s2, size_t n);
+int		ft_strcmp(char *s1, char *s2);
 void	ft_pwd();
 void	unset(t_list *env_list, char *name_varible);
 void	add_list_env(t_list *env_list, t_list *export_list, char **envp);
 void	output_list(t_list *list);
+void	output_export_list(t_list *export);
+int		exist_value_env(t_list *list, char *value);
 void	export_varible_in_env(t_list *env_list,
 	char *name_varible, char *value_varible);
 int		get_next_line(char **line, int fd);
@@ -80,4 +83,9 @@ int		ft_strcmp(char *s1, char *s2);
 char	*fn_circ_for_red(char *line, t_obj *obj);
 char	**ft_split_argv(char const *s, char c);
 void    free_double_array(char **array);
+int		fn_check_pipe(t_obj *obj);
+int		ft_putstr(char *line);
+int		fn_check_before_redirect(t_obj *obj);
+int		pars_line_with_pipes(t_obj *obj);
+void	utils_main(t_obj *obj);
 #endif

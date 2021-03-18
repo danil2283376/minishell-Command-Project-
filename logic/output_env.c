@@ -1,27 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strncmp.c                                       :+:      :+:    :+:   */
+/*   output_env.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/02/21 11:14:36 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/17 18:45:25 by melisha          ###   ########.fr       */
+/*   Created: 2021/03/17 18:47:38 by melisha           #+#    #+#             */
+/*   Updated: 2021/03/17 18:53:52 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../libminishell.h"
+#include "../libminishell.h"
 
-int		ft_strncmp(const char *s1, const char *s2, size_t n)
+void	output_list(t_list *list)
 {
-	size_t			i;
+	t_list		*copy;
+	char		*string;
 
-	i = 0;
-	while (i < n && (s1[i] || s2[i]))
+	copy = list;
+	string = NULL;
+	while (copy->next != NULL)
 	{
-		if (s1[i] != s2[i])
-			return ((unsigned char)s1[i] - (unsigned char)s2[i]);
-		i++;
+		copy = copy->next;
+		string = (char *)(copy->content);
+		write(1, string, ft_strlen(string));
+		write(1, "\n", 1);
 	}
-	return (0);
 }

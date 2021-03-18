@@ -6,7 +6,7 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/21 14:56:11 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/17 15:00:17 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/17 20:41:18 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,11 @@ void	fn_valid_arg_for_un(t_obj *obj, char *arg)
 		i++;
 	}
 	if (f == 0)
+	{
 		unset(&obj->env_list, arg);
+		// unset(&obj->export_list, "__");
+		unset(&obj->export_list, arg);
+	}
 	free(arg);
 }
 

@@ -1,42 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   fn_strcmp.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/02/14 09:23:48 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/18 11:59:44 by melisha          ###   ########.fr       */
+/*   Created: 2021/03/17 18:48:37 by melisha           #+#    #+#             */
+/*   Updated: 2021/03/17 18:48:46 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libminishell.h"
 
-int		get_next_line(char **line, int fd)
+int		ft_strcmp(char *s1, char *s2)
 {
-	int		i;
-	char	*buf;
-	int		j;
+	int	i;
 
 	i = 0;
-	if (!(buf = (char *)malloc(sizeof(char) * 10000)))
-		fn_error("no memory allocate");
-	while ((j = read(fd, &buf[i], 1)) >= 0 && buf[i] != '\n')
-	{
-		if (j == 0)
-		{
-			write(2, "  \b\b", 4);
-			if (i == 0)
-			{
-				write(2, "exit\n", 5);
-				exit(errno);
-			}
-			i--;
-		}
-		i++;
-	}
-	buf[i] = ' ';
-	buf[i + 1] = '\0';
-	*line = buf;
-	return (j);
+	while (s1[i] && s2[i] && s1[i] == s2[i])
+		++i;
+	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
 }

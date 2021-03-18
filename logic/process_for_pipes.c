@@ -6,17 +6,11 @@
 /*   By: melisha <melisha@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/25 18:59:03 by melisha           #+#    #+#             */
-/*   Updated: 2021/03/17 13:22:19 by melisha          ###   ########.fr       */
+/*   Updated: 2021/03/18 12:40:28 by melisha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../libminishell.h"
-/*
-*   obj->pars       // местоположение
-*   char            **line_for_pipe; // строки комманд и аргументов
-*   char            **command_for_pipe; // комманды в двумерном массиве
-*   char            **argument_for_pipe; // аргументы комманд в двумерном массиве
-*/
 
 char    *ft_my_strjoin(char const *s1, char const *s2)
 {
@@ -60,78 +54,79 @@ void    search_command_varible_path(t_obj *obj, int o)
     int i;
     int j;
     int k;
-    char *varible_path;
+    char *path;
     char *new_path;
     int error = -1;
     int count = 0;
-    char *leaks;
     i = 0;
-    j = 0;
-    k = 0;
+
     char **argv;
     obj->flag.exist_pipe = 0;
-    obj->pars.line_for_pipe[o] = fn_circumcision(obj->pars.line_for_pipe[o], obj);
+    if (!(obj->pars.line_for_pipe[o] = fn_circumcision(obj->pars.line_for_pipe[o], obj)))
+		fn_error("no memory allocate");
     obj->flag.exist_pipe = 1;
-    argv = ft_split(obj->pars.line_for_pipe[o], ' ');
-    obj->pars.command = ft_strdup(obj->pars.command_for_pipe[o]);
+    if (!(obj->pars.command = ft_strdup(obj->pars.command_for_pipe[o])))
+		fn_error("no memory allocate");
     obj->flag.valid_com = fn_valid_command(obj);
     if (obj->flag.valid_com == 0 && obj->flag.after_redir != 1)
     {
-        obj->pars.line = ft_strdup(obj->pars.command_for_pipe[o]);
+        if (!(obj->pars.line = ft_strdup(obj->pars.command_for_pipe[o])))
+			fn_error("no memory allocate");
         obj->flag.beg = 0;
         fn_pars_line(obj);
         if (obj->redirect.fd_back_redirect != 0)
             dup2(obj->redirect.fd_back_redirect, 0);
-        varible_path = fn_search_enviroment(obj, "PATH");
-        if (varible_path != NULL)
+		j = 0;
+       	path = fn_search_enviroment(obj, "PATH");
+        if (path != NULL)
         {
-            while (varible_path[i] != '\0')
-            {
-                while (varible_path[j] != ':' && varible_path[j])
-                    j++;
-                new_path = malloc(j + 1);
-                while (varible_path[i] != ':' && varible_path[i] != '\0')
-                {
-                    new_path[k] = varible_path[i++];
-                    k++;
-                }
-                new_path[k] = '\0';
-                leaks = new_path;
-                new_path = ft_my_strjoin(new_path, "/");
-                leaks = new_path;
-                new_path = ft_my_strjoin(new_path, obj->pars.command_for_pipe[o]);
-                error = execve(new_path, &argv[0], obj->pars.envp);
-                if (varible_path[i] == ':')
-                {
-                    i++;
-                    count++;
-                }
-                j = 0;
-                k = 0;
-            }
-        }
-        else
-            error = -1;
-        if (error == -1)
-        {
-            error = execve(obj->pars.command_for_pipe[o], &argv[0], obj->pars.envp);
-            if (error == -1)
-            {
-                errno = 127;
-                write(2, "minishell : ", 12);
-                write(2, argv[0], ft_strlen(argv[0]));
-                write(2, " : command not found\n", 21);
-                exit(errno);
-            }
-        }
+			if (obj->redirect.fd_back_redirect != 0)
+				obj->flag.exist_pipe = 0;
+			if (!(argv = ft_split(obj->pars.line_for_pipe[o], ' ')))
+				fn_error("no memory allocate");
+			obj->flag.exist_pipe = 1;
+			while (path[j])
+			{
+				k = j;
+				if (j == -1)
+					j++;
+				while (path[j] != ':' && path[j])
+					j++;
+				if (path[j] == ':')
+				{
+					path[j] = '\0';
+					j++;
+				}
+				char *new_str;
+				new_str = ft_strjoin(&path[k], "/");
+				new_str = ft_strjoin(new_str, obj->pars.command);
+				error = execve(new_str, &argv[0], obj->pars.envp);
+				if (error != -1)
+					break ;
+			}
+			if (error == -1)
+			{
+				error = execve(obj->pars.command, &argv[0], obj->pars.envp);
+				if (error == -1)
+					fn_command_not_found(obj);
+			}
+		}
+		else
+		{
+			if (!(argv = ft_split(obj->pars.line_for_pipe[o], ' ')))
+				fn_error("no memory allocate");
+			error = execve(obj->pars.command, &argv[0], obj->pars.envp);
+			if (error == -1)
+				fn_command_not_found(obj);
+		}
         obj->redirect.fd_back_redirect = 0;
     }
     else if (obj->flag.valid_com != 0 && obj->flag.valid_redir == 1)
     {
-        obj->pars.argument = ft_strdup(obj->pars.argument_for_pipe[o]);
+        if (!(obj->pars.argument = ft_strdup(obj->pars.argument_for_pipe[o])))
+			fn_error("no memory allocate");
         fn_valid_arg(obj);
     }
-    free_double_array(argv);
 }
 
 int     fn_check_red(t_obj *obj, int i)
@@ -181,7 +176,7 @@ int     threatment_pipe(t_obj *obj)
                 close(fd[0]);
                 close(fd[1]);
                 if (obj->flag.after_redir != 1)
-                    search_command_varible_path(obj, i);
+                	search_command_varible_path(obj, i);
             }
             exit(0);
         }
